@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantau Unit</title>
+    <style>
+        :root { --bg: #000000; --accent: #FF9500; --text: #FFFFFF; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; }
+        .container { width: 100%; max-width: 400px; text-align: center; }
+        .page { display: none; } .active { display: block; }
+        .ios-card { background: rgba(28, 28, 30, 0.6); backdrop-filter: blur(20px); border-radius: 24px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 5px; box-sizing: border-box; }
+        h1 { font-size: 42px; font-weight: 800; color: var(--accent); margin: 30px 0 5px 0; }
+        .form-title { color: var(--accent); margin-bottom: 20px; }
+        label { font-size: 12px; color: #8e8e93; display: block; margin-top: 10px; }
+        select, input, button { background: #1c1c1e; border: none; color: white; padding: 14px; width: 100%; height: 50px; border-radius: 16px; font-size: 15px; box-sizing: border-box; text-align: center; cursor: pointer; appearance: none; display: block; }
+        button { background: var(--accent); font-weight: 600; margin-top: 10px; }
+        .btn-back { background: #3a3a3c; margin-top: 20px; font-size: 14px; color: #ffffff; }
+        #video { width: 100%; border-radius: 24px; transform: scaleX(-1); background: #000; margin-top: 10px; }
+        .btn-snap { background: var(--accent); margin-top: 15px; width: 100%; }
+        .foto-item { margin-top: 20px; position: relative; }
+        .foto-item img { width: 100%; border-radius: 20px; }
+        .btn-hapus { position: absolute; bottom: 15px; right: 15px; background: rgba(255, 59, 48, 0.8); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .btn-kirim { background: #30d158; margin-top: 30px; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="page-login" class="page active">
+            <h1>Pantau Unit</h1>
+            <div class="ios-card">
+                <label>Pilih Posisi Operator</label>
+                <select id="posisi-select">
+                    <option value="Turbin">Operator Turbin</option>
+                    <option value="Boiler">Operator Boiler</option>
+                    <option value="Common">Operator Common</option>
+                </select>
+                <button onclick="changePage('page-form')">Masuk</button>
+            </div>
+        </div>
+
+        <div id="page-form" class="page">
+            <h2 class="form-title">Data Operator</h2>
+            <div class="ios-card">
+                <label>Tanggal Dinas</label><input type="date" id="tgl-dinas">
+                <label>Shift</label><select id="shift-select"><option>Pagi</option><option>Siang</option><option>Malam</option></select>
+                <label>Nama Operator</label>
+                <select id="nama-operator">
+                    <option value="Agus">Agus</option>
+                    <option value="Huda">Huda</option>
+                    <option value="Uji">Uji</option>
+                    <option value="Evan">Evan</option>
+                    <option value="Gusti">Gusti</option>
+                    <option value="Teguh">Teguh</option>
+                    <option value="David">David</option>
+                    <option value="Barep">Barep</option>
+                </select>
+                <label>Jam Log Sheet</label><input type="time" id="jam-log">
+                <button onclick="bukaKameraHalaman()">Lanjut ke Kamera</button>
+            </div>
+            <button class="btn-back" onclick="changePage('page-login')">← Kembali ke Login</button>
+        </div>
+
+        <div id="page-kamera" class="page">
+            <h2 class="form-title">Pilih Lokasi Log Sheet</h2>
+            <div class="ios-card">
+                <select id="lokasi-select"></select>
+                <video id="video" autoplay playsinline></video>
+                <button class="btn-snap" id="snap">Ambil Foto</button>
+            </div>
+            <div id="gallery"></div>
+            <button id="btnKirim" class="btn-kirim" onclick="kirimKeGoogle()">Kirim ke Google Sheets</button>
+            <button class="btn-back" onclick="changePage('page-form')">← Kembali ke Form</button>
+        </div>
+    </div>
+
+    <script>
+        const tugasOperator = {
+            "Turbin": ["Turbin 1", "Turbin 2", "Main Oil Tank 1", "Main Oil Tank 2"],
+            "Boiler": ["Boiler Feed Pump", "Deaerator", "Burner Level", "Furnace Pressure"],
+            "Common": ["Water Treatment", "Coal Conveyor", "Cooling Tower", "Air Compressor"]
+        };
+
+        function changePage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function bukaKameraHalaman() {
+            const pos = document.getElementById('posisi-select').value;
+            const selectLokasi = document.getElementById('lokasi-select');
+            selectLokasi.innerHTML = "";
+            tugasOperator[pos].forEach(loc => {
+                let opt = document.createElement('option'); opt.value = loc; opt.innerHTML = loc; selectLokasi.appendChild(opt);
+            });
+            changePage('page-kamera');
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } }).then(stream => { document.getElementById('video').srcObject = stream; });
+        }
+
+        const video = document.getElementById('video'), gallery = document.getElementById('gallery'), snap = document.getElementById('snap');
+        
+        snap.addEventListener('click', () => {
+            const lokasi = document.getElementById('lokasi-select').value;
+            const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(-1, 1); ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+            ctx.setTransform(1, 0, 0, 1, 0, 0); 
+            
+            const now = new Date();
+            const tgl = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            const hari = now.toLocaleDateString('id-ID', { weekday: 'long' });
+            const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+            
+            ctx.fillStyle = "white";
+            ctx.font = "bold 50px -apple-system"; ctx.fillText(lokasi, 50, 100);
+            ctx.font = "bold 100px -apple-system"; ctx.fillText(jam, 50, 210);
+            ctx.font = "40px -apple-system"; ctx.fillText(hari + ", " + tgl, 50, 270);
+
+            const div = document.createElement('div'); div.className = 'foto-item';
+            div.dataset.lokasi = lokasi;
+            div.innerHTML = `<p style="color:#FF9500; font-weight:bold; text-align:left; padding-left:10px;">${lokasi}</p><img src="${canvas.toDataURL('image/png')}">`;
+            
+            const btnHapus = document.createElement('button');
+            btnHapus.className = 'btn-hapus';
+            btnHapus.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>';
+            btnHapus.onclick = () => div.remove();
+            
+            div.appendChild(btnHapus);
+            gallery.appendChild(div);
+        });
+
+        async function kirimKeGoogle() {
+            const url = "https://script.google.com/macros/s/AKfycbxXewLdl6XB7nS15e0fTlfCEUcs_d8ZQdnkqP617oHYRYUlAth9GGJdObgWjpok9bay6A/exec";
+            const fotoItems = document.querySelectorAll('.foto-item');
+            if (fotoItems.length === 0) { alert("Ambil foto dulu, Bosku!"); return; }
+
+            const btnKirim = document.getElementById('btnKirim');
+            btnKirim.innerText = "Mengirim..."; btnKirim.disabled = true;
+
+            try {
+                for (let item of fotoItems) {
+                    const dataKirim = {
+                        tanggal: document.getElementById('tgl-dinas').value,
+                        shift: document.getElementById('shift-select').value,
+                        operator: document.getElementById('nama-operator').value,
+                        lokasi: item.dataset.lokasi,
+                        jam: document.getElementById('jam-log').value,
+                        foto: item.querySelector('img').src
+                    };
+                    await fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataKirim) });
+                }
+                
+                alert("Mantap! Semua data berhasil terkirim!");
+                document.getElementById('gallery').innerHTML = ""; 
+                btnKirim.innerText = "Kirim ke Google Sheets";
+                btnKirim.disabled = false;
+                
+                // Balik ke Login, bukan Form
+                changePage('page-login');
+                
+                // Bersihkan inputan form agar kosong saat dipakai lagi
+                document.getElementById('tgl-dinas').value = "";
+                document.getElementById('jam-log').value = "";
+                
+            } catch (error) {
+                alert("Yah, gagal kirim. Cek koneksi Anda!");
+                btnKirim.innerText = "Kirim ke Google Sheets";
+                btnKirim.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
