@@ -4,31 +4,129 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pantau Unit</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Pantau Unit">
     <style>
-        :root { --bg: #000000; --accent: #FF9500; --text: #FFFFFF; }
-        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; }
-        .container { width: 100%; max-width: 400px; text-align: center; }
-        .page { display: none; } .active { display: block; }
-        .ios-card { background: rgba(28, 28, 30, 0.6); backdrop-filter: blur(20px); border-radius: 24px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 5px; box-sizing: border-box; }
-        h1 { font-size: 42px; font-weight: 800; color: var(--accent); margin: 30px 0 5px 0; }
+        /* Variabel Warna Mode Gelap (Default) */
+        :root { 
+            --bg: #000000; 
+            --accent: #FF9500; 
+            --text: #FFFFFF; 
+            --card-bg: rgba(28, 28, 30, 0.6);
+            --input-bg: #1c1c1e;
+            --input-text: #FFFFFF;
+            --btn-back: #3a3a3c;
+            --btn-back-text: #FFFFFF;
+            --border: rgba(255,255,255,0.05);
+        }
+
+        /* Variabel Warna Mode Terang */
+        body.light-mode {
+            --bg: #F2F2F7; 
+            --text: #000000; 
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --input-bg: #FFFFFF;
+            --input-text: #000000;
+            --btn-back: #E5E5EA;
+            --btn-back-text: #000000;
+            --border: rgba(0,0,0,0.1);
+        }
+
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; transition: background 0.3s, color 0.3s; }
+        
+        .container { width: 100%; max-width: 400px; text-align: center; position: relative; }
+
+        /* CSS Untuk Switch Toggle */
+        .theme-switch-wrapper { display: flex; justify-content: center; margin-bottom: 20px; width: 100%; }
+        .theme-switch { display: inline-block; height: 26px; position: relative; width: 48px; }
+        .theme-switch input { display: none; }
+        .slider { background-color: #1c1c1e; bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; border-radius: 26px; border: 1px solid var(--border); box-sizing: border-box; }
+        .slider:before { background-color: var(--accent); bottom: 3px; content: ""; height: 18px; left: 3px; position: absolute; transition: .4s; width: 18px; border-radius: 50%; z-index: 2; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: #FFFFFF; border: 1px solid rgba(0,0,0,0.1); }
+        input:checked + .slider:before { transform: translateX(22px); }
+        .slider .icon { position: absolute; top: 50%; transform: translateY(-50%); font-size: 11px; z-index: 1; }
+        .slider .sun { left: 6px; opacity: 1; transition: 0.4s; }
+        .slider .moon { right: 5px; opacity: 1; transition: 0.4s; }
+
+        .page { display: none; width: 100%; } 
+        .active { display: block; }
+        
+        .ios-card { background: var(--card-bg); backdrop-filter: blur(20px); border-radius: 24px; padding: 24px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; transition: background 0.3s, border 0.3s; }
+        
+        h1 { font-size: 42px; font-weight: 800; color: var(--accent); margin: 0 0 5px 0; }
+        .subtitle { font-size: 14px; margin-top: -5px; margin-bottom: 25px; opacity: 0.6; }
+        .version { font-size: 10px; margin-top: 5px; opacity: 0.4; }
         .form-title { color: var(--accent); margin-bottom: 20px; }
-        label { font-size: 12px; color: #8e8e93; display: block; margin-top: 10px; }
-        select, input, button { background: #1c1c1e; border: none; color: white; padding: 14px; width: 100%; height: 50px; border-radius: 16px; font-size: 15px; box-sizing: border-box; text-align: center; cursor: pointer; appearance: none; display: block; }
-        button { background: var(--accent); font-weight: 600; margin-top: 10px; }
-        .btn-back { background: #3a3a3c; margin-top: 20px; font-size: 14px; color: #ffffff; }
+        
+        label { font-size: 12px; opacity: 0.7; display: block; margin-top: 10px; text-align: left; }
+        
+        select, input[type="date"], input[type="time"] { background: var(--input-bg); color: var(--input-text); border: none; padding: 14px; width: 100%; height: 50px; border-radius: 16px; font-size: 15px; box-sizing: border-box; text-align: center; cursor: pointer; appearance: none; display: block; transition: background 0.3s, color 0.3s; font-family: inherit; }
+        
+        button.btn-primary { background: var(--accent); color: white; border: none; padding: 14px; width: 100%; height: 50px; border-radius: 16px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; display: block; }
+        
+        .btn-back { background: var(--btn-back); color: var(--btn-back-text); border: none; padding: 14px; width: 100%; height: 50px; border-radius: 16px; font-size: 14px; cursor: pointer; margin-top: 20px; transition: background 0.3s, color 0.3s; }
+        
         #video { width: 100%; border-radius: 24px; transform: scaleX(-1); background: #000; margin-top: 10px; }
-        .btn-snap { background: var(--accent); margin-top: 15px; width: 100%; }
+        #flash-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; transition: opacity 0.1s; border-radius: 24px; z-index: 10; }
+        
+        .btn-snap { background: var(--accent); margin-top: 15px; width: 100%; color: white; border: none; padding: 14px; height: 50px; border-radius: 16px; font-size: 15px; font-weight: 600; cursor: pointer; }
+        
         .foto-item { margin-top: 20px; position: relative; }
         .foto-item img { width: 100%; border-radius: 20px; }
-        .btn-hapus { position: absolute; bottom: 15px; right: 15px; background: rgba(255, 59, 48, 0.8); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .btn-kirim { background: #30d158; margin-top: 30px; font-size: 16px; }
+        
+        .btn-hapus { position: absolute; bottom: 15px; right: 15px; background: rgba(255, 59, 48, 0.8); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; border: none; font-weight: bold; }
+        
+        .btn-kirim { background: #30d158; color: white; margin-top: 30px; font-size: 16px; font-weight: bold; border: none; padding: 14px; width: 100%; height: 50px; border-radius: 16px; cursor: pointer; transition: opacity 0.3s; }
+        .btn-kirim:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Animasi Loading Overlay */
+        #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; visibility: hidden; opacity: 0; transition: opacity 0.3s; }
+        #loading-overlay.show { visibility: visible; opacity: 1; }
+        .spinner { border: 4px solid rgba(255, 255, 255, 0.2); border-top: 4px solid var(--accent); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-text { color: white; margin-top: 15px; font-size: 14px; font-weight: 500; letter-spacing: 1px; }
+
+        /* Custom Pop-up Alert Elegan */
+        #custom-alert { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; visibility: hidden; opacity: 0; transition: opacity 0.3s, visibility 0.3s; }
+        #custom-alert.show { visibility: visible; opacity: 1; }
+        .alert-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 25px; width: 80%; max-width: 300px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transform: scale(0.9); transition: transform 0.3s; }
+        #custom-alert.show .alert-box { transform: scale(1); }
+        .alert-msg { font-size: 15px; margin-bottom: 25px; color: var(--text); line-height: 1.5; font-weight: 500; }
+        .btn-alert { background: var(--accent); color: white; border: none; padding: 12px; width: 100%; border-radius: 14px; font-size: 15px; font-weight: bold; cursor: pointer; }
+
     </style>
 </head>
 <body>
 
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">MENGIRIM DATA...</div>
+    </div>
+
+    <div id="custom-alert">
+        <div class="alert-box">
+            <div class="alert-msg" id="custom-alert-msg">Pesan alert di sini</div>
+            <button class="btn-alert" onclick="tutupAlert()">OK</button>
+        </div>
+    </div>
+
     <div class="container">
+        
         <div id="page-login" class="page active">
+            
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" />
+                    <div class="slider round">
+                        <span class="icon sun">☀️</span>
+                        <span class="icon moon">🌙</span>
+                    </div>
+                </label>
+            </div>
+
             <h1>Pantau Unit</h1>
+            <p class="subtitle">Log Sheet Harian Operator</p>
             <div class="ios-card">
                 <label>Pilih Posisi Operator</label>
                 <select id="posisi-select">
@@ -36,7 +134,8 @@
                     <option value="Boiler">Operator Boiler</option>
                     <option value="Common">Operator Common</option>
                 </select>
-                <button onclick="changePage('page-form')">Masuk</button>
+                <button class="btn-primary" onclick="mulaiForm()">Masuk</button>
+                <p class="version">v1.8</p>
             </div>
         </div>
 
@@ -44,42 +143,86 @@
             <h2 class="form-title">Data Operator</h2>
             <div class="ios-card">
                 <label>Tanggal Dinas</label><input type="date" id="tgl-dinas">
-                <label>Shift</label><select id="shift-select"><option>Pagi</option><option>Siang</option><option>Malam</option></select>
-                <label>Nama Operator</label>
-                <select id="nama-operator">
-                    <option value="Agus">Agus</option>
-                    <option value="Huda">Huda</option>
-                    <option value="Uji">Uji</option>
-                    <option value="Evan">Evan</option>
-                    <option value="Gusti">Gusti</option>
-                    <option value="Teguh">Teguh</option>
-                    <option value="David">David</option>
-                    <option value="Barep">Barep</option>
+                <label>Shift</label>
+                <select id="shift-select">
+                    <option>Pagi</option>
+                    <option>Siang</option>
+                    <option>Malam</option>
                 </select>
+                <label>Nama Operator</label>
+                <select id="nama-operator"></select>
                 <label>Jam Log Sheet</label><input type="time" id="jam-log">
-                <button onclick="bukaKameraHalaman()">Lanjut ke Kamera</button>
+                <button class="btn-primary" onclick="bukaKameraHalaman()">Lanjut ke Kamera</button>
             </div>
-            <button class="btn-back" onclick="changePage('page-login')">← Kembali ke Login</button>
+            <button class="btn-back" onclick="changePage('page-login')">← Kembali</button>
         </div>
 
         <div id="page-kamera" class="page">
-            <h2 class="form-title">Pilih Lokasi Log Sheet</h2>
+            <h2 class="form-title">Pilih Lokasi</h2>
             <div class="ios-card">
                 <select id="lokasi-select"></select>
-                <video id="video" autoplay playsinline></video>
+                <div style="position: relative;">
+                    <video id="video" autoplay playsinline></video>
+                    <div id="flash-overlay"></div>
+                </div>
                 <button class="btn-snap" id="snap">Ambil Foto</button>
             </div>
             <div id="gallery"></div>
-            <button id="btnKirim" class="btn-kirim" onclick="kirimKeGoogle()">Kirim ke Google Sheets</button>
-            <button class="btn-back" onclick="changePage('page-form')">← Kembali ke Form</button>
+            <button id="btnKirim" class="btn-kirim" onclick="kirimKeGoogle()">Kirim</button>
+            <button class="btn-back" onclick="changePage('page-form')">← Kembali</button>
         </div>
+
     </div>
 
     <script>
-        const tugasOperator = {
+        // FUNGSI CUSTOM ALERT
+        function tampilkanAlert(pesan) {
+            document.getElementById('custom-alert-msg').innerText = pesan;
+            document.getElementById('custom-alert').classList.add('show');
+        }
+
+        function tutupAlert() {
+            document.getElementById('custom-alert').classList.remove('show');
+        }
+
+        // Logika Tema Light/Dark dengan Switch Checkbox
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-login').classList.add('active');
+            
+            const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+            const currentTheme = localStorage.getItem('theme');
+            
+            if (currentTheme) {
+                if (currentTheme === 'light') {
+                    document.body.classList.add('light-mode');
+                    toggleSwitch.checked = true;
+                }
+            }
+            
+            toggleSwitch.addEventListener('change', function(e) {
+                if (e.target.checked) {
+                    document.body.classList.add('light-mode');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.body.classList.remove('light-mode');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        });
+
+        // Data Operator
+        const dataOperator = {
+            "Turbin": ["Agus", "Huda", "Uji", "Evan", "Gusti", "Teguh", "David", "Barep"],
+            "Boiler": ["Harman", "Yusuf", "Egar", "Gandha", "Ferdi", "Meyer", "Aris"],
+            "Common": ["Haidir", "Lutfi", "Adi", "Sultan", "Jimmy", "Sambodo", "Kiel", "Rizki"]
+        };
+
+        // Data Lokasi
+        const tugasLokasi = {
             "Turbin": ["Turbin 1", "Turbin 2", "Main Oil Tank 1", "Main Oil Tank 2"],
-            "Boiler": ["Boiler Feed Pump", "Deaerator", "Burner Level", "Furnace Pressure"],
-            "Common": ["Water Treatment", "Coal Conveyor", "Cooling Tower", "Air Compressor"]
+            "Boiler": ["Coal Feeder Unit 1", "Coal Feeder Unit 2", "ID Fan Unit 1", "ID Fan Unit 2"],
+            "Common": ["Area Compressor", "CCCW"]
         };
 
         function changePage(pageId) {
@@ -87,56 +230,77 @@
             document.getElementById(pageId).classList.add('active');
         }
 
+        function mulaiForm() {
+            const pos = document.getElementById('posisi-select').value;
+            const selectNama = document.getElementById('nama-operator');
+            selectNama.innerHTML = "";
+            dataOperator[pos].forEach(nama => {
+                let opt = document.createElement('option'); opt.value = nama; opt.innerHTML = nama; selectNama.appendChild(opt);
+            });
+            changePage('page-form');
+        }
+
         function bukaKameraHalaman() {
             const pos = document.getElementById('posisi-select').value;
             const selectLokasi = document.getElementById('lokasi-select');
             selectLokasi.innerHTML = "";
-            tugasOperator[pos].forEach(loc => {
+            tugasLokasi[pos].forEach(loc => {
                 let opt = document.createElement('option'); opt.value = loc; opt.innerHTML = loc; selectLokasi.appendChild(opt);
             });
             changePage('page-kamera');
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } }).then(stream => { document.getElementById('video').srcObject = stream; });
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } }).then(stream => { document.getElementById('video').srcObject = stream; }).catch(err => tampilkanAlert("Izin akses kamera diperlukan."));
         }
 
-        const video = document.getElementById('video'), gallery = document.getElementById('gallery'), snap = document.getElementById('snap');
+        const video = document.getElementById('video'), gallery = document.getElementById('gallery'), snap = document.getElementById('snap'), flash = document.getElementById('flash-overlay');
         
+        // Logika Pengambilan Foto & Efek Flash
         snap.addEventListener('click', () => {
-            const lokasi = document.getElementById('lokasi-select').value;
-            const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.scale(-1, 1); ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-            ctx.setTransform(1, 0, 0, 1, 0, 0); 
-            
-            const now = new Date();
-            const tgl = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-            const hari = now.toLocaleDateString('id-ID', { weekday: 'long' });
-            const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
-            
-            ctx.fillStyle = "white";
-            ctx.font = "bold 50px -apple-system"; ctx.fillText(lokasi, 50, 100);
-            ctx.font = "bold 100px -apple-system"; ctx.fillText(jam, 50, 210);
-            ctx.font = "40px -apple-system"; ctx.fillText(hari + ", " + tgl, 50, 270);
+            flash.style.opacity = '1';
+            setTimeout(() => {
+                const lokasi = document.getElementById('lokasi-select').value;
+                const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.scale(-1, 1); ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+                ctx.setTransform(1, 0, 0, 1, 0, 0); 
+                
+                const now = new Date();
+                const tgl = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                const hari = now.toLocaleDateString('id-ID', { weekday: 'long' });
+                const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+                
+                ctx.fillStyle = "white";
+                ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 5;
+                ctx.font = "bold 40px -apple-system"; ctx.fillText(lokasi.toUpperCase(), 40, canvas.height - 110);
+                ctx.font = "30px -apple-system"; ctx.fillText(`${hari}, ${tgl} | ${jam}`, 40, canvas.height - 60);
 
-            const div = document.createElement('div'); div.className = 'foto-item';
-            div.dataset.lokasi = lokasi;
-            div.innerHTML = `<p style="color:#FF9500; font-weight:bold; text-align:left; padding-left:10px;">${lokasi}</p><img src="${canvas.toDataURL('image/png')}">`;
-            
-            const btnHapus = document.createElement('button');
-            btnHapus.className = 'btn-hapus';
-            btnHapus.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>';
-            btnHapus.onclick = () => div.remove();
-            
-            div.appendChild(btnHapus);
-            gallery.appendChild(div);
+                const div = document.createElement('div'); div.className = 'foto-item';
+                div.dataset.lokasi = lokasi;
+                div.innerHTML = `<p style="color:#FF9500; font-weight:bold; text-align:left; padding-left:10px; margin-bottom:10px; margin-top:0;">${lokasi}</p><img src="${canvas.toDataURL('image/png')}">`;
+                const btnHapus = document.createElement('button');
+                btnHapus.className = 'btn-hapus';
+                btnHapus.innerHTML = 'X';
+                btnHapus.onclick = () => div.remove();
+                div.appendChild(btnHapus);
+                gallery.appendChild(div);
+                flash.style.opacity = '0';
+            }, 100);
         });
 
+        // Logika Pengiriman Data ke Google Sheets
         async function kirimKeGoogle() {
             const url = "https://script.google.com/macros/s/AKfycbxXewLdl6XB7nS15e0fTlfCEUcs_d8ZQdnkqP617oHYRYUlAth9GGJdObgWjpok9bay6A/exec";
             const fotoItems = document.querySelectorAll('.foto-item');
-            if (fotoItems.length === 0) { alert("Ambil foto dulu, Bosku!"); return; }
+            
+            if (fotoItems.length === 0) { 
+                tampilkanAlert("Harap mengambil setidaknya satu foto terlebih dahulu."); 
+                return; 
+            }
 
             const btnKirim = document.getElementById('btnKirim');
-            btnKirim.innerText = "Mengirim..."; btnKirim.disabled = true;
+            const loadingOverlay = document.getElementById('loading-overlay');
+            
+            btnKirim.disabled = true;
+            loadingOverlay.classList.add('show'); // Memunculkan animasi loading
 
             try {
                 for (let item of fotoItems) {
@@ -148,24 +312,30 @@
                         jam: document.getElementById('jam-log').value,
                         foto: item.querySelector('img').src
                     };
-                    await fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataKirim) });
+                    
+                    await fetch(url, { 
+                        method: 'POST', 
+                        mode: 'no-cors', 
+                        headers: { 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify(dataKirim) 
+                    });
                 }
                 
-                alert("Mantap! Semua data berhasil terkirim!");
+                loadingOverlay.classList.remove('show'); // Menyembunyikan animasi loading
+                tampilkanAlert("Data berhasil dikirim.");
+                
                 document.getElementById('gallery').innerHTML = ""; 
-                btnKirim.innerText = "Kirim ke Google Sheets";
                 btnKirim.disabled = false;
                 
-                // Balik ke Login, bukan Form
                 changePage('page-login');
                 
-                // Bersihkan inputan form agar kosong saat dipakai lagi
                 document.getElementById('tgl-dinas').value = "";
                 document.getElementById('jam-log').value = "";
                 
             } catch (error) {
-                alert("Yah, gagal kirim. Cek koneksi Anda!");
-                btnKirim.innerText = "Kirim ke Google Sheets";
+                console.error(error);
+                loadingOverlay.classList.remove('show'); // Menyembunyikan animasi loading jika error
+                tampilkanAlert("Gagal mengirim data. Silakan periksa koneksi internet Anda.");
                 btnKirim.disabled = false;
             }
         }
