@@ -10,34 +10,36 @@
     <style>
         /* Variabel Warna Mode Gelap (Default) */
         :root { 
-            --bg: #000000; 
-            --accent: #FF9500; 
-            --text: #FFFFFF; 
-            --card-bg: rgba(28, 28, 30, 0.6);
-            --input-bg: #1c1c1e;
-            --input-text: #FFFFFF;
-            --btn-back: #3a3a3c;
-            --btn-back-text: #FFFFFF;
+            --bg: #000000; --accent: #FF9500; --text: #FFFFFF; 
+            --card-bg: rgba(28, 28, 30, 0.6); --input-bg: #1c1c1e;
+            --input-text: #FFFFFF; --btn-back: #3a3a3c; --btn-back-text: #FFFFFF;
             --border: rgba(255,255,255,0.05);
         }
 
         /* Variabel Warna Mode Terang */
         body.light-mode {
-            --bg: #F2F2F7; 
-            --text: #000000; 
-            --card-bg: rgba(255, 255, 255, 0.8);
-            --input-bg: #FFFFFF;
-            --input-text: #000000;
-            --btn-back: #E5E5EA;
-            --btn-back-text: #000000;
-            --border: rgba(0,0,0,0.1);
+            --bg: #F2F2F7; --text: #000000; --card-bg: rgba(255, 255, 255, 0.8);
+            --input-bg: #FFFFFF; --input-text: #000000; --btn-back: #E5E5EA;
+            --btn-back-text: #000000; --border: rgba(0,0,0,0.1);
         }
 
         body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; transition: background 0.3s, color 0.3s; }
         
         .container { width: 100%; max-width: 400px; text-align: center; position: relative; }
 
-        /* CSS Untuk Switch Toggle */
+        /* Overlay Flash Layar Penuh */
+        #full-screen-flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 9999; transition: opacity 0.1s; }
+
+        /* Modern Switch Styles */
+        .switch-wrapper { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; padding: 0 5px; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider-modern { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3a3a3c; transition: .4s; border-radius: 34px; }
+        .slider-modern:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider-modern { background-color: var(--accent); }
+        input:checked + .slider-modern:before { transform: translateX(24px); }
+
+        /* CSS Untuk Switch Theme */
         .theme-switch-wrapper { display: flex; justify-content: center; margin-bottom: 20px; width: 100%; }
         .theme-switch { display: inline-block; height: 26px; position: relative; width: 48px; }
         .theme-switch input { display: none; }
@@ -98,6 +100,8 @@
     </style>
 </head>
 <body>
+
+    <div id="full-screen-flash"></div>
 
     <div id="loading-overlay">
         <div class="spinner"></div>
@@ -160,6 +164,13 @@
         <div id="page-kamera" class="page">
             <h2 class="form-title">Pilih Lokasi</h2>
             <div class="ios-card">
+                <div class="switch-wrapper">
+                    <label style="margin-top:0;">Flash Layar</label>
+                    <label class="switch">
+                        <input type="checkbox" id="flash-toggle" checked>
+                        <span class="slider-modern"></span>
+                    </label>
+                </div>
                 <select id="lokasi-select"></select>
                 <div style="position: relative;">
                     <video id="video" autoplay playsinline></video>
@@ -175,7 +186,9 @@
     </div>
 
     <script>
-        // FUNGSI CUSTOM ALERT
+        const flashToggle = document.getElementById('flash-toggle');
+        const fullFlash = document.getElementById('full-screen-flash');
+
         function tampilkanAlert(pesan) {
             document.getElementById('custom-alert-msg').innerText = pesan;
             document.getElementById('custom-alert').classList.add('show');
@@ -185,40 +198,26 @@
             document.getElementById('custom-alert').classList.remove('show');
         }
 
-        // Logika Tema Light/Dark dengan Switch Checkbox
         document.addEventListener("DOMContentLoaded", function() {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page-login').classList.add('active');
             
             const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
             const currentTheme = localStorage.getItem('theme');
-            
-            if (currentTheme) {
-                if (currentTheme === 'light') {
-                    document.body.classList.add('light-mode');
-                    toggleSwitch.checked = true;
-                }
-            }
+            if (currentTheme === 'light') { document.body.classList.add('light-mode'); toggleSwitch.checked = true; }
             
             toggleSwitch.addEventListener('change', function(e) {
-                if (e.target.checked) {
-                    document.body.classList.add('light-mode');
-                    localStorage.setItem('theme', 'light');
-                } else {
-                    document.body.classList.remove('light-mode');
-                    localStorage.setItem('theme', 'dark');
-                }
+                if (e.target.checked) { document.body.classList.add('light-mode'); localStorage.setItem('theme', 'light'); }
+                else { document.body.classList.remove('light-mode'); localStorage.setItem('theme', 'dark'); }
             });
         });
 
-        // Data Operator
         const dataOperator = {
             "Turbin": ["Agus", "Huda", "Uji", "Evan", "Gusti", "Teguh", "David", "Barep"],
             "Boiler": ["Harman", "Yusuf", "Egar", "Gandha", "Ferdi", "Meyer", "Aris"],
             "Common": ["Haidir", "Lutfi", "Adi", "Sultan", "Jimmy", "Sambodo", "Kiel", "Rizki"]
         };
 
-        // Data Lokasi
         const tugasLokasi = {
             "Turbin": ["Turbin 1", "Turbin 2", "Main Oil Tank 1", "Main Oil Tank 2"],
             "Boiler": ["Coal Feeder Unit 1", "Coal Feeder Unit 2", "ID Fan Unit 1", "ID Fan Unit 2"],
@@ -253,8 +252,11 @@
 
         const video = document.getElementById('video'), gallery = document.getElementById('gallery'), snap = document.getElementById('snap'), flash = document.getElementById('flash-overlay');
         
-        // Logika Pengambilan Foto & Efek Flash
-        snap.addEventListener('click', () => {
+        snap.addEventListener('click', async () => {
+            if (flashToggle.checked) fullFlash.style.opacity = '1';
+            
+            await new Promise(r => setTimeout(r, 200));
+
             flash.style.opacity = '1';
             setTimeout(() => {
                 const lokasi = document.getElementById('lokasi-select').value;
@@ -282,13 +284,14 @@
                 btnHapus.onclick = () => div.remove();
                 div.appendChild(btnHapus);
                 gallery.appendChild(div);
+                
                 flash.style.opacity = '0';
+                fullFlash.style.opacity = '0';
             }, 100);
         });
 
-        // Logika Pengiriman Data ke Google Sheets
         async function kirimKeGoogle() {
-            const url = "https://script.google.com/macros/s/AKfycbxXewLdl6XB7nS15e0fTlfCEUcs_d8ZQdnkqP617oHYRYUlAth9GGJdObgWjpok9bay6A/exec";
+            const url = "https://script.google.com/macros/s/AKfycbxlGGifwVgGluN9d2zYq1aoXcn4SM0eMu1q8zO47h9DPYDphrsyxXHV8VCOzD1J98QQwg/exec";
             const fotoItems = document.querySelectorAll('.foto-item');
             
             if (fotoItems.length === 0) { 
@@ -300,11 +303,12 @@
             const loadingOverlay = document.getElementById('loading-overlay');
             
             btnKirim.disabled = true;
-            loadingOverlay.classList.add('show'); // Memunculkan animasi loading
+            loadingOverlay.classList.add('show');
 
             try {
                 for (let item of fotoItems) {
                     const dataKirim = {
+                        posisi: document.getElementById('posisi-select').value,
                         tanggal: document.getElementById('tgl-dinas').value,
                         shift: document.getElementById('shift-select').value,
                         operator: document.getElementById('nama-operator').value,
@@ -321,20 +325,16 @@
                     });
                 }
                 
-                loadingOverlay.classList.remove('show'); // Menyembunyikan animasi loading
+                loadingOverlay.classList.remove('show');
                 tampilkanAlert("Data berhasil dikirim.");
-                
                 document.getElementById('gallery').innerHTML = ""; 
                 btnKirim.disabled = false;
-                
                 changePage('page-login');
-                
                 document.getElementById('tgl-dinas').value = "";
                 document.getElementById('jam-log').value = "";
-                
             } catch (error) {
                 console.error(error);
-                loadingOverlay.classList.remove('show'); // Menyembunyikan animasi loading jika error
+                loadingOverlay.classList.remove('show');
                 tampilkanAlert("Gagal mengirim data. Silakan periksa koneksi internet Anda.");
                 btnKirim.disabled = false;
             }
