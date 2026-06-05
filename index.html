@@ -8,19 +8,30 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Pantau Unit">
     <style>
+        /* Variabel Warna Mode Gelap (Default) */
         :root { 
             --bg: #000000; --accent: #FF9500; --text: #FFFFFF; 
             --card-bg: rgba(28, 28, 30, 0.6); --input-bg: #1c1c1e;
-            --input-text: #FFFFFF; --btn-back: #3a3a3c; --btn-back-text: #FFFFFF;
-            --border: rgba(255,255,255,0.05);
+            --input-text: #FFFFFF; --border: rgba(255,255,255,0.05);
         }
+
+        /* Variabel Warna Mode Terang */
         body.light-mode {
-            --bg: #F2F2F7; --text: #000000; --card-bg: rgba(255, 255, 255, 0.8);
-            --input-bg: #FFFFFF; --input-text: #000000; --btn-back: #E5E5EA;
-            --btn-back-text: #000000; --border: rgba(0,0,0,0.1);
+            --bg: #FAFAFA; --text: #000000; --card-bg: rgba(255, 255, 255, 0.8);
+            --input-bg: #FFFFFF; --input-text: #000000; --border: rgba(0,0,0,0.1);
         }
-        body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; transition: background 0.3s, color 0.3s; }
-        .container { width: 100%; max-width: 400px; text-align: center; position: relative; }
+
+        /* --- PENAMBAHAN EFEK ANIMASI SLIDE KANAN KIRI --- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInRight { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideInLeft { from { transform: translateX(-40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 0 20px 20px 20px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; margin: 0; transition: background 0.3s, color 0.3s; animation: fadeIn 0.5s ease-out; overflow-x: hidden; }
+        
+        .container { width: 100%; max-width: 400px; text-align: center; position: relative; padding-bottom: 110px; box-sizing: border-box; min-height: 100vh; display: flex; flex-direction: column; }
+
+        #full-screen-flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 9999; transition: opacity 0.1s; }
+
         .switch-wrapper { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; padding: 0 5px; }
         .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -28,7 +39,8 @@
         .slider-modern:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider-modern { background-color: var(--accent); }
         input:checked + .slider-modern:before { transform: translateX(24px); }
-        .theme-switch-wrapper { display: flex; justify-content: center; margin-bottom: 20px; width: 100%; }
+
+        .theme-switch-wrapper { display: flex; justify-content: center; padding-top: 20px; margin-bottom: 20px; width: 100%; }
         .theme-switch { display: inline-block; height: 26px; position: relative; width: 48px; }
         .theme-switch input { display: none; }
         .slider { background-color: #1c1c1e; bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; border-radius: 26px; border: 1px solid var(--border); box-sizing: border-box; }
@@ -38,300 +50,1152 @@
         .slider .icon { position: absolute; top: 50%; transform: translateY(-50%); font-size: 11px; z-index: 1; }
         .slider .sun { left: 6px; opacity: 1; transition: 0.4s; }
         .slider .moon { right: 5px; opacity: 1; transition: 0.4s; }
-        .page { display: none; width: 100%; } .active { display: block; }
-        .ios-card { background: var(--card-bg); backdrop-filter: blur(20px); border-radius: 24px; padding: 24px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; transition: background 0.3s, border 0.3s; }
+
+        /* --- HOME HEADER TATA LETAK RAPI --- */
+        .main-header { position: relative; padding: 15px 0 5px 0; z-index: 100; width: 100%; display: flex; flex-direction: column; align-items: center; }
+
+        /* --- HEADER OPSI: KOLOM OVAL MELAYANG SUPER TRANSPARAN --- */
+        .header-bar { 
+            position: sticky; 
+            top: 15px; 
+            background: rgba(18, 18, 18, 0.25); /* Jauh lebih transparan */
+            backdrop-filter: blur(25px) saturate(200%); 
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px; 
+            padding: 12px 15px;
+            margin: 10px auto 25px auto; 
+            min-height: 44px; 
+            width: 90%;
+            max-width: 380px;
+            z-index: 100;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-sizing: border-box;
+            transition: background 0.3s;
+        }
+        body.light-mode .header-bar {
+            background: rgba(255, 255, 255, 0.35); /* Lebih transparan */
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .btn-back-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text); cursor: pointer; padding: 10px; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s, transform 0.2s; z-index: 110; }
+        .btn-back-icon:active { opacity: 0.5; transform: translateY(-50%) scale(0.9); }
+        .btn-back-icon svg { width: 22px; height: 22px; }
+        .form-title { margin: 0; font-size: 18px; color: var(--accent); font-weight: bold; text-align: center; width: 100%; padding: 0 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.3px;}
+
+        .page { display: none; width: 100%; flex: 1; position: relative; } 
+        .active { display: flex; flex-direction: column; }
+        
+        .slide-right { animation: slideInRight 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .slide-left { animation: slideInLeft 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+
+        .center-form-wrapper { display: flex; flex-direction: column; justify-content: center; flex: 1; padding-bottom: 40px; }
+
+        .ios-card { background: var(--card-bg); backdrop-filter: blur(20px); border-radius: 24px; padding: 24px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; transition: background 0.3s, border 0.3s; margin-bottom: 15px; }
+        
         h1 { font-size: 42px; font-weight: 800; color: var(--accent); margin: 0 0 5px 0; }
         .subtitle { font-size: 15px; margin-top: -5px; margin-bottom: 25px; opacity: 0.7; font-weight: 600; letter-spacing: -0.5px; }
-        .form-title { color: var(--accent); margin-bottom: 20px; }
-        label { font-size: 12px; opacity: 0.7; display: block; margin-top: 10px; text-align: left; }
-        select, input[type="text"], input[type="date"], input[type="time"] { background: var(--input-bg); color: var(--input-text); border: none; padding: 14px; width: 100%; height: 50px; border-radius: 16px; font-size: 15px; box-sizing: border-box; text-align: center; cursor: pointer; appearance: none; display: block; transition: background 0.3s, color 0.3s; font-family: inherit; }
+        .equipment-title { font-size: 16px; font-weight: 700; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 10px; margin: 0 0 5px 0; text-align: left; }
+        label { font-size: 12px; opacity: 0.7; display: block; margin-top: 5px; text-align: left; font-weight: 500;}
+        
+        select, input[type="text"], input[type="number"], input[type="date"], input[type="time"] { 
+            background: var(--input-bg); color: var(--input-text); border: 1px solid var(--border); 
+            padding: 0 15px; width: 100%; height: 50px; border-radius: 16px; font-size: 15px; 
+            box-sizing: border-box; text-align: left; cursor: pointer; display: flex; align-items: center; 
+            transition: background 0.3s, color 0.3s, transform 0.2s; font-family: inherit; -webkit-appearance: none; appearance: none;
+        }
+        select:focus, input:focus { transform: scale(1.01); outline: none; border-color: var(--accent); }
+        select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FF9500' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 16px; }
+        input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
         textarea { background: var(--input-bg); color: var(--input-text); border: none; padding: 14px; width: 100%; border-radius: 16px; font-size: 15px; box-sizing: border-box; resize: vertical; min-height: 100px; font-family: inherit; margin-top: 5px; transition: background 0.3s, color 0.3s; }
-        button.btn-primary { background: var(--accent); color: white; border: none; padding: 14px; width: 100%; height: 50px; border-radius: 16px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; display: block; }
-        .btn-back { background: var(--btn-back); color: var(--btn-back-text); border: none; padding: 14px; width: 100%; height: 50px; border-radius: 16px; font-size: 14px; cursor: pointer; margin-top: 20px; transition: background 0.3s, color 0.3s; font-weight: 500; font-family: inherit; }
-        .menu-list { display: flex; flex-direction: column; gap: 14px; margin-top: 30px; }
+
+        button.btn-primary { background: var(--accent); color: white; border: none; padding: 14px; width: 100%; height: 50px; border-radius: 16px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; display: block; box-sizing: border-box; transition: transform 0.2s; }
+        button.btn-primary:active { transform: scale(0.98); }
+        .btn-kirim { background: #30d158; color: white; margin-top: 30px; font-size: 16px; font-weight: bold; border: none; padding: 14px; width: 100%; height: 50px; border-radius: 16px; cursor: pointer; transition: opacity 0.3s, transform 0.2s; box-sizing: border-box; }
+        .btn-kirim:active { transform: scale(0.98); }
+        .btn-kirim:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .menu-list { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; width: 100%; }
         .menu-item { background: var(--card-bg); border: 1px solid var(--border); padding: 14px 20px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: transform 0.2s, background 0.3s; color: var(--text); backdrop-filter: blur(20px); box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .menu-item:active { transform: scale(0.96); background: var(--input-bg); }
+        .menu-item:hover { transform: translateY(-2px); background: rgba(255,255,255,0.05); }
+        .menu-item:active { transform: scale(0.96); }
         .menu-item-left { display: flex; align-items: center; gap: 16px; }
         .menu-icon { font-size: 20px; background: var(--input-bg); width: 42px; height: 42px; border-radius: 14px; display: flex; align-items: center; justify-content: center; transition: background 0.3s; }
         .menu-text { font-size: 16px; font-weight: 600; letter-spacing: -0.3px; font-family: inherit; }
         .menu-arrow { color: var(--accent); opacity: 0.8; font-weight: bold; font-size: 14px; }
         .menu-item.danger .menu-icon { background: rgba(255, 59, 48, 0.15); }
         .menu-item.danger .menu-text { color: #ff453a; }
-        .menu-item.danger .menu-arrow { color: #ff453a; }
+        .menu-item.danger .menu-arrow { color: #ff3b30; }
         body.light-mode .menu-item.danger .menu-text, body.light-mode .menu-item.danger .menu-arrow { color: #ff3b30; }
+
+        /* --- KARTU OPSI UNIT VERTIKAL DI TENGAH --- */
+        .unit-card-container { display: flex; flex-direction: column; gap: 15px; justify-content: center; align-items: center; margin: 20px 0; padding: 0 5px; flex: 1; }
+        .unit-card-item { width: 85%; max-width: 300px; background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; padding: 25px; display: flex; align-items: center; justify-content: center; gap: 15px; cursor: pointer; transition: transform 0.2s, background 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .unit-card-item:active { transform: scale(0.95); background: rgba(255,149,0,0.1); border-color: var(--accent); }
+        .unit-card-icon { font-size: 28px; }
+        .unit-card-text { font-size: 18px; font-weight: bold; color: var(--text); }
+
         input[type="file"] { background: rgba(255, 149, 0, 0.05); color: var(--text); border: 1px dashed var(--accent); padding: 15px; width: 100%; border-radius: 16px; font-size: 14px; box-sizing: border-box; cursor: pointer; margin-top: 5px; font-family: inherit; }
         input[type="file"]::file-selector-button { background: var(--accent); color: white; border: none; padding: 8px 12px; border-radius: 10px; margin-right: 10px; cursor: pointer; font-weight: bold; font-family: inherit; }
-        .preview-wrapper { position: relative; display: none; margin-top: 10px; width: 100%; }
+        .preview-wrapper { position: relative; display: none; margin-top: 10px; width: 100%; animation: fadeIn 0.3s; }
         .preview-wrapper img, .preview-wrapper video { width: 100%; border-radius: 16px; border: 1px solid var(--border); box-sizing: border-box; display: block; }
         .btn-hapus { position: absolute; bottom: 12px; right: 12px; background: rgba(255, 59, 48, 0.95); width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.2s; z-index: 10; padding: 0; }
         .btn-hapus:active { transform: scale(0.9); }
         .btn-hapus svg { width: 22px; height: 22px; stroke: white; }
+
         #video { width: 100%; border-radius: 24px; transform: scaleX(-1); background: #000; margin-top: 10px; }
         #flash-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; transition: opacity 0.1s; border-radius: 24px; z-index: 10; }
-        .btn-snap { background: var(--accent); margin-top: 15px; width: 100%; color: white; border: none; padding: 14px; height: 50px; border-radius: 16px; font-size: 15px; font-weight: 600; cursor: pointer; }
-        .foto-item { margin-top: 20px; position: relative; width: 100%; }
+        .btn-snap { background: var(--accent); margin-top: 15px; width: 100%; color: white; border: none; padding: 14px; height: 50px; border-radius: 16px; font-size: 15px; font-weight: 600; cursor: pointer; box-sizing: border-box; transition: transform 0.2s; }
+        .btn-snap:active { transform: scale(0.98); }
+        .foto-item { margin-top: 20px; position: relative; width: 100%; animation: fadeIn 0.3s ease; }
         .foto-item img { width: 100%; border-radius: 16px; box-sizing: border-box; border: 1px solid var(--border); }
-        .btn-kirim { background: #30d158; color: white; margin-top: 30px; font-size: 16px; font-weight: bold; border: none; padding: 14px; width: 100%; height: 50px; border-radius: 16px; cursor: pointer; transition: opacity 0.3s; }
-        .btn-kirim:disabled { opacity: 0.5; cursor: not-allowed; }
+
         #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; visibility: hidden; opacity: 0; transition: opacity 0.3s; }
         #loading-overlay.show { visibility: visible; opacity: 1; }
         .spinner { border: 4px solid rgba(255, 255, 255, 0.2); border-top: 4px solid var(--accent); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .loading-text { color: white; margin-top: 15px; font-size: 14px; font-weight: 500; letter-spacing: 1px; }
+
         #custom-alert { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; visibility: hidden; opacity: 0; transition: opacity 0.3s, visibility 0.3s; }
         #custom-alert.show { visibility: visible; opacity: 1; }
         .alert-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 25px; width: 80%; max-width: 300px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transform: scale(0.9); transition: transform 0.3s; }
         #custom-alert.show .alert-box { transform: scale(1); }
         .alert-msg { font-size: 15px; margin-bottom: 25px; color: var(--text); line-height: 1.5; font-weight: 500; font-family: inherit; }
-        .btn-alert { background: var(--accent); color: white; border: none; padding: 12px; width: 100%; border-radius: 14px; font-size: 15px; font-weight: bold; cursor: pointer; font-family: inherit; }
+        .btn-alert { background: var(--accent); color: white; border: none; padding: 12px; width: 100%; border-radius: 14px; font-size: 15px; font-weight: bold; cursor: pointer; font-family: inherit; transition: transform 0.2s; }
+        .btn-alert:active { transform: scale(0.95); }
+
+        /* --- BAR NAVIGASI DIPERKEcil 70% --- */
+        .ig-floating-nav {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%; /* Diubah menjadi 70% */
+            max-width: 280px; /* Lebar maksimal juga dikurangi */
+            background: rgba(18, 18, 18, 0.25);
+            backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            padding: 6px 10px; /* Padding dikurangi */
+            z-index: 9999;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        body.light-mode .ig-floating-nav {
+            background: rgba(255, 255, 255, 0.35);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.05);
+        }
+
+        .ig-floating-nav.shrunk {
+            max-width: 200px;
+            padding: 4px 6px;
+            bottom: 12px;
+        }
+        .ig-floating-nav.shrunk .ig-nav-item { width: 38px; height: 32px; }
+        .ig-floating-nav.shrunk .ig-nav-item svg { width: 18px; height: 18px; }
+        .ig-floating-nav.shrunk .nav-indicator { height: 32px; top: 4px; }
+
+        .nav-indicator {
+            position: absolute;
+            height: 38px;
+            background: rgba(255, 255, 255, 0.25); 
+            border-radius: 20px;
+            left: 0;
+            top: 6px; 
+            z-index: -1;
+            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), width 0.35s, height 0.4s, top 0.4s;
+            pointer-events: none;
+        }
+        body.light-mode .nav-indicator { background: rgba(0, 0, 0, 0.08); }
+
+        .ig-nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 38px;
+            color: var(--text);
+            cursor: pointer;
+            border-radius: 20px;
+            transition: color 0.3s, opacity 0.3s, width 0.4s, height 0.4s;
+            opacity: 0.5;
+        }
+        .ig-nav-item svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; transition: width 0.4s, height 0.4s;}
+        .ig-nav-item.active { opacity: 1; }
+        .ig-nav-item.active svg { stroke-width: 2.3; }
     </style>
 </head>
 <body>
+
+    <div id="full-screen-flash"></div>
+
     <div id="loading-overlay">
         <div class="spinner"></div>
         <div class="loading-text">MENGIRIM DATA...</div>
     </div>
+
     <div id="custom-alert">
         <div class="alert-box">
             <div class="alert-msg" id="custom-alert-msg">Pesan alert di sini</div>
             <button class="btn-alert" onclick="tutupAlert()">OK</button>
         </div>
     </div>
+
     <div class="container">
+        
         <div id="page-dashboard" class="page active">
-            <div class="theme-switch-wrapper"><label class="theme-switch" for="checkbox"><input type="checkbox" id="checkbox" /><div class="slider round"><span class="icon sun">☀️</span><span class="icon moon">🌙</span></div></label></div>
-            <h1>Pantau Unit</h1><p class="subtitle">PLTU Muara Jawa 2 x 27,5 MW</p>
-            <div class="menu-list">
-                <div class="menu-item" onclick="changePage('page-login')"><div class="menu-item-left"><div class="menu-icon">📝</div><div class="menu-text">Log Sheet</div></div><div class="menu-arrow">❯</div></div>
-                <div class="menu-item" onclick="changePage('page-flm')"><div class="menu-item-left"><div class="menu-icon">🔧</div><div class="menu-text">Laporan FLM dan 5S</div></div><div class="menu-arrow">❯</div></div>
+            <div class="main-header">
+                <div class="theme-switch-wrapper">
+                    <label class="theme-switch" for="checkbox">
+                        <input type="checkbox" id="checkbox" />
+                        <div class="slider round">
+                            <span class="icon sun">☀️</span>
+                            <span class="icon moon">🌙</span>
+                        </div>
+                    </label>
+                </div>
+                <h1>Pantau Unit</h1>
+                <p class="subtitle">PLTU Muara Jawa 2 x 27,5 MW</p>
+            </div>
+            
+            <div class="menu-list" style="margin-top: 10px;">
+                <div class="menu-item" onclick="changePage('page-pilih-logsheet', 'right')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">📝</div>
+                        <div class="menu-text">Log Sheet</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                
+                <div class="menu-item" onclick="changePage('page-flm', 'right')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🔧</div>
+                        <div class="menu-text">Laporan FLM dan 5S</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+
                 <hr style="margin: 10px 0; border: 0; border-top: 1px solid var(--border);">
-                <div class="menu-item danger" onclick="changePage('page-temuan')"><div class="menu-item-left"><div class="menu-icon">⚠️</div><div class="menu-text">Laporkan Temuan</div></div><div class="menu-arrow">❯</div></div>
+
+                <div class="menu-item danger" onclick="changePage('page-temuan', 'right')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">⚠️</div>
+                        <div class="menu-text">Laporkan Temuan</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
             </div>
-            <p style="font-size: 11px; margin-top: 30px; opacity: 0.4; font-weight: 500;">v2.7</p>
+            <p style="font-size: 11px; margin-top: 30px; opacity: 0.4; font-weight: 500;">v3.2 (Operator Common Update)</p>
         </div>
+
+        <div id="page-pilih-logsheet" class="page">
+            <div class="header-bar">
+                <button class="btn-back-icon" onclick="changePage('page-dashboard', 'left')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <h2 class="form-title">Jenis Log Sheet</h2>
+            </div>
+            
+            <div class="menu-list">
+                <div class="menu-item" onclick="changePage('page-login', 'right')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">📸</div>
+                        <div class="menu-text">Log Sheet Selfie</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                <div class="menu-item" onclick="changePage('page-pilih-parameter', 'right')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">⚙️</div>
+                        <div class="menu-text">Log Sheet Parameter</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-pilih-parameter" class="page">
+            <div class="header-bar">
+                <button class="btn-back-icon" onclick="changePage('page-pilih-logsheet', 'left')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <h2 class="form-title">Pilih Area</h2>
+            </div>
+            
+            <div class="menu-list">
+                <div class="menu-item" onclick="changePage('page-pilih-unit-turbin', 'right')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🏭</div>
+                        <div class="menu-text">Operator Turbin</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                <div class="menu-item" onclick="changePage('page-pilih-unit-boiler', 'right')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🔥</div>
+                        <div class="menu-text">Operator Boiler</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                <div class="menu-item" onclick="bukaFormCommon('right')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🔧</div>
+                        <div class="menu-text">Operator Common</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-pilih-unit-turbin" class="page">
+            <div class="header-bar">
+                <button class="btn-back-icon" onclick="changePage('page-pilih-parameter', 'left')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <h2 class="form-title">Lokal Turbin</h2>
+            </div>
+            
+            <div class="center-form-wrapper">
+                <div class="unit-card-container">
+                    <div class="unit-card-item" onclick="bukaFormTurbin('Unit 1', 'right')">
+                        <div class="unit-card-icon">1️⃣</div>
+                        <div class="unit-card-text">Unit 1</div>
+                    </div>
+                    <div class="unit-card-item" onclick="bukaFormTurbin('Unit 2', 'right')">
+                        <div class="unit-card-icon">2️⃣</div>
+                        <div class="unit-card-text">Unit 2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-pilih-unit-boiler" class="page">
+            <div class="header-bar">
+                <button class="btn-back-icon" onclick="changePage('page-pilih-parameter', 'left')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <h2 class="form-title">Lokal Boiler</h2>
+            </div>
+            
+            <div class="center-form-wrapper">
+                <div class="unit-card-container">
+                    <div class="unit-card-item" onclick="bukaFormBoiler('Unit 1', 'right')">
+                        <div class="unit-card-icon">1️⃣</div>
+                        <div class="unit-card-text">Unit 1</div>
+                    </div>
+                    <div class="unit-card-item" onclick="bukaFormBoiler('Unit 2', 'right')">
+                        <div class="unit-card-icon">2️⃣</div>
+                        <div class="unit-card-text">Unit 2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-form-turbin" class="page">
+            <div class="header-bar">
+                <button class="btn-back-icon" onclick="changePage('page-pilih-unit-turbin', 'left')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <h2 class="form-title" id="judul-turbin">Turbin</h2>
+            </div>
+            
+            <div class="ios-card">
+                <h3 class="equipment-title">Identitas Laporan</h3>
+                <label>Tanggal</label>
+                <input type="date" id="turbin-tgl" required>
+                
+                <label>Nama Operator</label>
+                <select id="turbin-nama">
+                    <option value="">- Pilih Operator -</option>
+                    <option value="Agus">Agus</option>
+                    <option value="Huda">Huda</option>
+                    <option value="Uji">Uji</option>
+                    <option value="Evan">Evan</option>
+                    <option value="Gusti">Gusti</option>
+                    <option value="Teguh">Teguh</option>
+                    <option value="David">David</option>
+                    <option value="Barep">Barep</option>
+                </select>
+
+                <label>Regu</label>
+                <select id="turbin-regu">
+                    <option value="">- Pilih Regu -</option>
+                    <option value="A">Regu A</option>
+                    <option value="B">Regu B</option>
+                    <option value="C">Regu C</option>
+                    <option value="D">Regu D</option>
+                </select>
+                
+                <label>Jam Log Sheet</label>
+                <select id="turbin-jam">
+                    <option value="">- Pilih Jam -</option>
+                    <option value="00:00">00:00</option>
+                    <option value="02:00">02:00</option>
+                    <option value="04:00">04:00</option>
+                    <option value="06:00">06:00</option>
+                    <option value="08:00">08:00</option>
+                    <option value="10:00">10:00</option>
+                    <option value="12:00">12:00</option>
+                    <option value="14:00">14:00</option>
+                    <option value="16:00">16:00</option>
+                    <option value="18:00">18:00</option>
+                    <option value="20:00">20:00</option>
+                    <option value="22:00">22:00</option>
+                </select>
+            </div>
+
+            <div id="container-turbin"></div>
+
+            <button class="btn-kirim" style="margin-top: 15px;" onclick="kirimDataTurbin()">Kirim Data Parameter</button>
+        </div>
+
+        <div id="page-form-boiler" class="page">
+            <div class="header-bar">
+                <button class="btn-back-icon" onclick="changePage('page-pilih-unit-boiler', 'left')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <h2 class="form-title" id="judul-boiler">Boiler</h2>
+            </div>
+            
+            <div class="ios-card">
+                <h3 class="equipment-title">Identitas Laporan</h3>
+                <label>Tanggal</label>
+                <input type="date" id="boiler-tgl" required>
+                
+                <label>Nama Operator</label>
+                <select id="boiler-nama">
+                    <option value="">- Pilih Operator -</option>
+                    <option value="Harman">Harman</option>
+                    <option value="Yusuf">Yusuf</option>
+                    <option value="Egar">Egar</option>
+                    <option value="Gandha">Gandha</option>
+                    <option value="Ferdi">Ferdi</option>
+                    <option value="Meyer">Meyer</option>
+                    <option value="Aris">Aris</option>
+                    <option value="Deo">Deo</option>
+                </select>
+
+                <label>Regu</label>
+                <select id="boiler-regu">
+                    <option value="">- Pilih Regu -</option>
+                    <option value="A">Regu A</option>
+                    <option value="B">Regu B</option>
+                    <option value="C">Regu C</option>
+                    <option value="D">Regu D</option>
+                </select>
+                
+                <label>Jam Log Sheet</label>
+                <select id="boiler-jam">
+                    <option value="">- Pilih Jam -</option>
+                    <option value="00:00">00:00</option>
+                    <option value="02:00">02:00</option>
+                    <option value="04:00">04:00</option>
+                    <option value="06:00">06:00</option>
+                    <option value="08:00">08:00</option>
+                    <option value="10:00">10:00</option>
+                    <option value="12:00">12:00</option>
+                    <option value="14:00">14:00</option>
+                    <option value="16:00">16:00</option>
+                    <option value="18:00">18:00</option>
+                    <option value="20:00">20:00</option>
+                    <option value="22:00">22:00</option>
+                </select>
+            </div>
+
+            <div id="container-boiler"></div>
+
+            <button class="btn-kirim" style="margin-top: 15px;" onclick="kirimDataBoiler()">Kirim Data Parameter</button>
+        </div>
+
+        <div id="page-form-common" class="page">
+            <div class="header-bar">
+                <button class="btn-back-icon" onclick="changePage('page-pilih-parameter', 'left')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <h2 class="form-title">Lokal Common</h2>
+            </div>
+            
+            <div class="ios-card">
+                <h3 class="equipment-title">Identitas Laporan</h3>
+                <label>Tanggal</label>
+                <input type="date" id="common-tgl" required>
+                
+                <label>Nama Operator</label>
+                <select id="common-nama">
+                    <option value="">- Pilih Operator -</option>
+                    <option value="Haidir">Haidir</option>
+                    <option value="Lutfi">Lutfi</option>
+                    <option value="Adi">Adi</option>
+                    <option value="Sultan">Sultan</option>
+                    <option value="Jimmy">Jimmy</option>
+                    <option value="Sambodo">Sambodo</option>
+                    <option value="Kiel">Kiel</option>
+                    <option value="Rizki">Rizki</option>
+                </select>
+
+                <label>Regu</label>
+                <select id="common-regu">
+                    <option value="">- Pilih Regu -</option>
+                    <option value="A">Regu A</option>
+                    <option value="B">Regu B</option>
+                    <option value="C">Regu C</option>
+                    <option value="D">Regu D</option>
+                </select>
+                
+                <label>Jam Log Sheet</label>
+                <select id="common-jam">
+                    <option value="">- Pilih Jam -</option>
+                    <option value="00:00">00:00</option>
+                    <option value="02:00">02:00</option>
+                    <option value="04:00">04:00</option>
+                    <option value="06:00">06:00</option>
+                    <option value="08:00">08:00</option>
+                    <option value="10:00">10:00</option>
+                    <option value="12:00">12:00</option>
+                    <option value="14:00">14:00</option>
+                    <option value="16:00">16:00</option>
+                    <option value="18:00">18:00</option>
+                    <option value="20:00">20:00</option>
+                    <option value="22:00">22:00</option>
+                </select>
+            </div>
+
+            <div id="container-common"></div>
+
+            <button class="btn-kirim" style="margin-top: 15px;" onclick="kirimDataCommon()">Kirim Data Parameter</button>
+        </div>
+
         <div id="page-login" class="page">
-            <h2 class="form-title">Log Sheet Operator</h2>
-            <div class="ios-card">
-                <label>Pilih Posisi Operator</label>
-                <select id="posisi-select"><option value="Turbin">Operator Turbin</option><option value="Boiler">Operator Boiler</option><option value="Common">Operator Common</option></select>
-                <button class="btn-primary" onclick="mulaiForm()">Selanjutnya</button>
+            <div class="header-bar">
+                <button class="btn-back-icon" onclick="changePage('page-pilih-logsheet', 'left')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <h2 class="form-title">Selfie Posisi</h2>
             </div>
-            <button class="btn-back" onclick="changePage('page-dashboard')">← Kembali ke Beranda</button>
+            
+            <div class="center-form-wrapper">
+                <div class="ios-card">
+                    <label>Pilih Posisi Operator</label>
+                    <select id="posisi-select">
+                        <option value="Turbin">Operator Turbin</option>
+                        <option value="Boiler">Operator Boiler</option>
+                        <option value="Common">Operator Common</option>
+                    </select>
+                    <button class="btn-primary" onclick="mulaiFormSelfie()">Selanjutnya</button>
+                </div>
+            </div>
         </div>
+
         <div id="page-form" class="page">
-            <h2 class="form-title">Data Operator</h2>
-            <div class="ios-card">
-                <label>Tanggal Dinas</label><input type="date" id="tgl-dinas">
-                <label>Regu</label><select id="regu-select"><option value="A">Regu A</option><option value="B">Regu B</option><option value="C">Regu C</option><option value="D">Regu D</option></select>
-                <label>Shift</label><select id="shift-select"><option>Pagi</option><option>Siang</option><option>Malam</option></select>
-                <label>Nama Operator</label><select id="nama-operator"></select>
-                <label>Jam Log Sheet</label><input type="time" id="jam-log">
-                <button class="btn-primary" onclick="bukaKameraHalaman()">Selanjutnya</button>
+            <div class="header-bar">
+                <button class="btn-back-icon" onclick="changePage('page-login', 'left')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <h2 class="form-title">Selfie Dinas</h2>
             </div>
-            <button class="btn-back" onclick="changePage('page-login')">← Kembali</button>
+            
+            <div class="center-form-wrapper">
+                <div class="ios-card">
+                    <label>Tanggal Dinas</label><input type="date" id="tgl-dinas">
+                    <label>Regu</label>
+                    <select id="regu-select">
+                        <option value="A">Regu A</option><option value="B">Regu B</option><option value="C">Regu C</option><option value="D">Regu D</option>
+                    </select>
+                    <label>Shift</label>
+                    <select id="shift-select"><option>Pagi</option><option>Siang</option><option>Malam</option></select>
+                    <label>Nama Operator</label>
+                    <select id="nama-operator"></select>
+                    <label>Jam Log Sheet</label><input type="time" id="jam-log">
+                    <button class="btn-primary" onclick="bukaKameraHalaman()">Selanjutnya</button>
+                </div>
+            </div>
         </div>
+
         <div id="page-kamera" class="page">
-            <h2 class="form-title">Pilih Lokasi</h2>
+            <div class="header-bar">
+                <button class="btn-back-icon" onclick="changePage('page-form', 'left')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <h2 class="form-title">Selfie Area</h2>
+            </div>
+            
             <div class="ios-card">
-                <div class="switch-wrapper"><label style="margin-top:0;">Flash Layar</label><label class="switch"><input type="checkbox" id="flash-toggle" checked><span class="slider-modern"></span></label></div>
+                <div class="switch-wrapper">
+                    <label style="margin-top:0;">Flash Layar</label>
+                    <label class="switch"><input type="checkbox" id="flash-toggle" checked><span class="slider-modern"></span></label>
+                </div>
                 <select id="lokasi-select"></select>
-                <div style="position: relative;"><video id="video" autoplay playsinline></video><div id="flash-overlay"></div></div>
+                <div style="position: relative;">
+                    <video id="video" autoplay playsinline></video>
+                    <div id="flash-overlay"></div>
+                </div>
                 <button class="btn-snap" id="snap">Ambil Foto</button>
             </div>
             <div id="gallery"></div>
-            <button class="btn-kirim" onclick="kirimLogsheet()">Kirim</button>
-            <button class="btn-back" onclick="changePage('page-form')">← Kembali</button>
+            <button class="btn-kirim" onclick="kirimLogsheetSelfie()">Kirim</button>
         </div>
+
         <div id="page-flm" class="page">
-            <h2 class="form-title">Laporan FLM & 5S</h2>
+            <div class="header-bar">
+                <h2 class="form-title">Laporan FLM & 5S</h2>
+            </div>
+            
             <div class="ios-card" style="margin-bottom: 15px;">
                 <label style="margin-top: 0;">Pilih Regu</label>
                 <select id="flm-regu-select"><option value="A">Regu A</option><option value="B">Regu B</option><option value="C">Regu C</option><option value="D">Regu D</option></select>
             </div>
             <div class="ios-card">
                 <h3 style="margin: 0; color: var(--accent); font-size: 20px; text-align: left;">Upload Foto</h3>
-                <label>Pilih Foto FLM / 5S (Maksimal 5 Foto)</label><input type="file" id="file-flm" accept="image/*">
+                <label>Pilih Foto FLM / 5S (Maksimal 5 Foto)</label>
+                <input type="file" id="file-flm" accept="image/*">
                 <div id="gallery-flm" style="display:flex; flex-direction:column; gap:15px; margin-top:10px;"></div>
             </div>
             <button class="btn-primary" style="margin-top: 25px;" onclick="kirimFLM()">Kirim Laporan</button>
-            <button class="btn-back" onclick="changePage('page-dashboard')">← Kembali ke Beranda</button>
         </div>
+
         <div id="page-temuan" class="page">
-            <h2 class="form-title">Laporkan Temuan</h2>
+            <div class="header-bar">
+                <h2 class="form-title">Laporan Temuan</h2>
+            </div>
+            
             <div class="ios-card">
                 <label style="margin-top: 0;">Pilih Regu</label>
                 <select id="temuan-regu-select"><option value="A">Regu A</option><option value="B">Regu B</option><option value="C">Regu C</option><option value="D">Regu D</option></select>
                 <label>Pilih Unit</label>
                 <select id="temuan-unit-select"><option value="Unit 1">Unit 1</option><option value="Unit 2">Unit 2</option><option value="Common Area">Area Common</option></select>
-                <label>Nama Alat</label><input type="text" id="temuan-nama-alat" placeholder="Contoh: Pompa Boiler...">
+                <label>Nama Alat</label>
+                <input type="text" id="temuan-nama-alat" placeholder="Contoh: Pompa Boiler, Pipa Valve...">
                 <hr style="margin: 10px 0; border: 0; border-top: 1px solid var(--border);">
-                <label>📸 Upload Foto / Video Temuan</label><input type="file" id="file-temuan" accept="image/*,video/*">
+                <label>📸 Upload Foto / Video Temuan</label>
+                <input type="file" id="file-temuan" accept="image/*,video/*">
+                <p style="font-size: 11px; margin-top: 5px; opacity: 0.5;">*Pilih Kamera untuk foto, atau Galeri untuk file/video (Maks 15MB).</p>
                 <div class="preview-wrapper" id="wrap-temuan">
-                    <img id="preview-temuan-img" style="display:none;">
+                    <img id="preview-temuan-img" alt="Preview Temuan Foto" style="display:none;">
                     <video id="preview-temuan-vid" controls style="display:none;"></video>
-                    <button class="btn-hapus" onclick="hapusTemuan()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                    <button class="btn-hapus" onclick="hapusTemuan()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
                 </div>
                 <label style="margin-top: 15px;">Deskripsi Temuan</label>
-                <textarea id="deskripsi-temuan" placeholder="Tuliskan detail masalah..."></textarea>
+                <textarea id="deskripsi-temuan" placeholder="Tuliskan detail masalah di sini..."></textarea>
             </div>
             <button class="btn-primary" style="margin-top: 25px;" onclick="kirimTemuan()">Kirim Laporan</button>
-            <button class="btn-back" onclick="changePage('page-dashboard')">← Kembali ke Beranda</button>
         </div>
+
     </div>
+
+    <nav class="ig-floating-nav">
+        <div class="nav-indicator" id="nav-indicator"></div>
+
+        <div class="ig-nav-item active" data-index="0" onclick="handleNavClick('page-dashboard', 0)">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </div>
+        <div class="ig-nav-item" data-index="1" onclick="handleNavClick('page-pilih-logsheet', 1)">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        </div>
+        <div class="ig-nav-item" data-index="2" onclick="handleNavClick('page-flm', 2)">
+            <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+        </div>
+        <div class="ig-nav-item" data-index="3" onclick="handleNavClick('page-temuan', 3)">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </div>
+    </nav>
+
     <script>
         const GAS_URL = "https://script.google.com/macros/s/AKfycbxlGGifwVgGluN9d2zYq1aoXcn4SM0eMu1q8zO47h9DPYDphrsyxXHV8VCOzD1J98QQwg/exec";
         const flashToggle = document.getElementById('flash-toggle');
         let base64TemuanFinal = ""; 
+        let activeUnitName = "";
+
         const trashSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
 
-        function tampilkanAlert(pesan) { document.getElementById('custom-alert-msg').innerText = pesan; document.getElementById('custom-alert').classList.add('show'); }
+        /* --- DATA PARAMETER DINAMIS DIOPTIMALKAN --- */
+        const paramBfp = [ { id: "temp_motor", label: "TEMPERATURE MOTOR (°C)", type: "number" }, { id: "temp_pompa", label: "TEMPERATURE POMPA (°C)", type: "number" }, { id: "temp_mot_oil", label: "TEMPERATURE MOTOR OIL STATION (°C)", type: "number" }, { id: "temp_oil", label: "TEMPERATURE OIL STATION (°C)", type: "number" }, { id: "level_oil", label: "LEVEL OIL STATION (%)", type: "number" }, { id: "press_inlet", label: "PRESSURE INLET (Kg/cm2)", type: "number" }, { id: "bal_press", label: "BALANCING PRESSURE (Kg/cm2)", type: "number" }, { id: "press_outlet", label: "PRESSURE OUTLET (Kg/cm2)", type: "number" } ];
+        const paramVfd = [ { id: "temp_a", label: "TEMPERATURE PHASA A (°C)", type: "number" }, { id: "temp_b", label: "TEMPERATURE PHASA B (°C)", type: "number" }, { id: "temp_c", label: "TEMPERATURE PHASA C (°C)", type: "number" }, { id: "ef1", label: "EXHAUST FAN 1 (RUNNING/NOT)", type: "select", options: ["RUNNING", "NOT"] }, { id: "ef2", label: "EXHAUST FAN 2 (RUNNING/NOT)", type: "select", options: ["RUNNING", "NOT"] }, { id: "ef3", label: "EXHAUST FAN 3 (RUNNING/NOT)", type: "select", options: ["RUNNING", "NOT"] }, { id: "ef4", label: "EXHAUST FAN 4 (RUNNING/NOT)", type: "select", options: ["RUNNING", "NOT"] } ];
+        const paramCep = [ { id: "temp_motor", label: "TEMPERATURE MOTOR (°C)", type: "number" }, { id: "level_oli", label: "LEVEL OLI (%)", type: "number" } ];
+        const paramVac = [ { id: "temp_motor", label: "TEMPERATURE MOTOR (°C)", type: "number" }, { id: "pelumasan", label: "PELUMASAN (Ok/Not)", type: "select", options: ["Ok", "Not"] } ];
+        const paramTrafo = [ { id: "winding_temp", label: "WINDING TEMPERATURE (°C)", type: "number" }, { id: "oil_temp", label: "OIL TEMPERATURE (°C)", type: "number" }, { id: "oil_level", label: "OIL LEVEL KONSERVATOR", type: "number" }, { id: "silica", label: "SILICA GEL", type: "select", options: ["Ungu", "Biru", "Putih", "Pink"] } ];
+        const paramCwp = [ { id: "vibrasi", label: "VIBRASI", type: "number" }, { id: "level_oli", label: "LEVEL OLI (%)", type: "number" }, { id: "sealing", label: "SEALING (Ok/Not)", type: "select", options: ["Ok", "Not"] } ];
+        
+        const dataEquipmentTurbin = [
+            { nama_base: "BOILER FEED PUMP {U}A", prefix: "bfpa", parameter: paramBfp },
+            { nama_base: "BOILER FEED PUMP {U}B", prefix: "bfpb", parameter: paramBfp },
+            { nama_base: "PANEL VFD BFP {U}A", prefix: "vfda", parameter: paramVfd },
+            { nama_base: "PANEL VFD BFP {U}B", prefix: "vfdb", parameter: paramVfd },
+            { nama_base: "CONDENSATE EXTRACTION PUMP {U}A", prefix: "cepa", parameter: paramCep },
+            { nama_base: "CONDENSATE EXTRACTION PUMP {U}B", prefix: "cepb", parameter: paramCep },
+            { nama_base: "VACUM PUMP {U}A", prefix: "vaca", parameter: paramVac },
+            { nama_base: "VACUM PUMP {U}B", prefix: "vacb", parameter: paramVac },
+            { nama_base: "MAIN LUBE OIL", prefix: "mlo", parameter: [ { id: "press_filter", label: "PRESSURE FILTER MOT (Kg/cm2)", type: "number" }, { id: "temp_cooler_in", label: "TEMPERATURE COOLER INLET MOT (°C)", type: "number" }, { id: "temp_cooler_out", label: "TEMPERATURE COOLER OUTLET MOT (°C)", type: "number" }, { id: "level_tank", label: "LEVEL TANK MOT (mm)", type: "number" }, { id: "ac_lube_out", label: "AC LUBE OIL OUTLET PRESSURE (Kg/cm2)", type: "number" }, { id: "oil_pipe_press", label: "OIL PIPE PRESSURE (Kg/Cm2)", type: "number" }, { id: "ef", label: "EXHAUST FAN (Ok/Not)", type: "select", options: ["Ok", "Not"] } ] },
+            { nama_base: "EH OIL", prefix: "eho", parameter: [ { id: "press_pompa", label: "PRESSURE POMPA (Kg/Cm2)", type: "number" }, { id: "level_tank", label: "LEVEL TANK (mm)", type: "number" }, { id: "diff_press", label: "DIFFERENTIAL PRESSURE (Kg/Cm2)", type: "number" } ] },
+            { nama_base: "GLAND STEAM", prefix: "gs", parameter: [ { id: "level_gs", label: "LEVEL GLAND STEAM (mm)", type: "number" }, { id: "motor_ef", label: "MOTOR EXHAUST FAN (°C)", type: "number" } ] },
+            { nama_base: "GENERATOR #{U}", prefix: "gen", parameter: [ { id: "filter_in", label: "FILTER AIR COOLER INLET (Ok/Not)", type: "select", options: ["Ok", "Not"] }, { id: "filter_out", label: "FILTER AIR COOLER OUTLET (Ok/Not)", type: "select", options: ["Ok", "Not"] }, { id: "cb_plus", label: "CARBON BRUSH SISI + ( >30% )", type: "select", options: ["Ok", "Not"] }, { id: "cb_min", label: "CARBON BRUSH SISI - ( >30% )", type: "select", options: ["Ok", "Not"] }, { id: "ex_room", label: "EXCITATION ROOM (Ok/Not)", type: "select", options: ["Ok", "Not"] } ] },
+            { nama_base: "GSUT #{U}", prefix: "gsut", parameter: [...paramTrafo, { id: "pcf1", label: "PRIMARY COOLER FAN 1 (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "pcf2", label: "PRIMARY COOLER FAN 2 (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "pcf3", label: "PRIMARY COOLER FAN 3 (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "scf1", label: "SECONDARY COOLER FAN 1 (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "scf2", label: "SECONDARY COOLER FAN 2 (Run/Stop)", type: "select", options: ["Run", "Stop"] }] },
+            { nama_base: "UAT #{U}", prefix: "uat", parameter: [...paramTrafo, { id: "pf", label: "PRIMARY FAN (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "sf", label: "SECONDARY FAN (Run/Stop)", type: "select", options: ["Run", "Stop"] }] },
+            { nama_base: "CIRCULATING WATER PUMP 1", prefix: "cwp1", parameter: paramCwp },
+            { nama_base: "CIRCULATING WATER PUMP COMMON", prefix: "cwp_com", parameter: paramCwp },
+            { nama_base: "CIRCULATING WATER PUMP 2", prefix: "cwp2", parameter: paramCwp }
+        ];
+
+        const paramCf = [ { id: "flow", label: "FLOW (T/H)", type: "number" }, { id: "total_counter", label: "TOTAL COUNTER (Ton)", type: "number" }, { id: "temp_motor", label: "TEMPERATURE MOTOR (°C)", type: "number" }, { id: "temp_lower", label: "TEMPERATURE LOWER (°C)", type: "number" } ];
+        const paramFan = [ { id: "temp_motor", label: "TEMPERATURE MOTOR (°C)", type: "number" }, { id: "temp_fan", label: "TEMPERATURE FAN (°C)", type: "number" }, { id: "level_oli", label: "LEVEL OLI (%)", type: "number" } ];
+        
+        const dataEquipmentBoiler = [
+            { nama_base: "COAL FEEDER {U}A", prefix: "cfa", parameter: paramCf }, { nama_base: "COAL FEEDER {U}B", prefix: "cfb", parameter: paramCf }, { nama_base: "COAL FEEDER {U}C", prefix: "cfc", parameter: paramCf }, { nama_base: "COAL FEEDER {U}D", prefix: "cfd", parameter: paramCf },
+            { nama_base: "PRIMARY AIR FAN {U}A", prefix: "pafa", parameter: paramFan }, { nama_base: "PRIMARY AIR FAN {U}B", prefix: "pafb", parameter: paramFan },
+            { nama_base: "SECONDARY AIR FAN {U}A", prefix: "safa", parameter: paramFan }, { nama_base: "SECONDARY AIR FAN {U}B", prefix: "safb", parameter: paramFan },
+            { nama_base: "INDUCED DRAF FAN {U}A", prefix: "idfa", parameter: paramFan }, { nama_base: "INDUCED DRAF FAN {U}B", prefix: "idfb", parameter: paramFan },
+            { nama_base: "HIGH PRESSURE FLUIDIZE FAN {U}A", prefix: "hpffa", parameter: [ { id: "outlet_press", label: "OUTLET PRESSURE (Kg/Cm2)", type: "number" }, { id: "temp_inlet", label: "TEMPERATURE INLET (°C)", type: "number" } ] },
+            { nama_base: "HIGH PRESSURE FLUIDIZE FAN {U}B", prefix: "hpffb", parameter: [ { id: "outlet_press", label: "OUTLET PRESSURE (Kg/Cm2)", type: "number" }, { id: "temp_inlet", label: "TEMPERATURE INLET (°C)", type: "number" } ] },
+            { nama_base: "IGNITOR UNIT {U}", prefix: "ignitor", parameter: [ { id: "right", label: "RIGHT (Ok/Not)", type: "select", options: ["Ok", "Not"] }, { id: "left", label: "LEFT (Ok/Not)", type: "select", options: ["Ok", "Not"] } ] }
+        ];
+
+        const paramCccwp = [ { id: "temp_mot", label: "MOTOR TEMPERATURE (°C)", type: "number" }, { id: "temp_pompa", label: "TEMPERATURE POMPA (°C)", type: "number" }, { id: "lube", label: "LUBRICATING (Ok/Not)", type: "select", options: ["Ok", "Not"] } ];
+        const paramTrafoEsp = [ { id: "level_oli", label: "LEVEL OLI (%)", type: "number" }, { id: "silica", label: "SILICA GEL (biru/ungu/putih/pink)", type: "select", options: ["Biru", "Ungu", "Putih", "Pink"] }, { id: "temp_trafo", label: "TEMPERATURE TRAFO (°C)", type: "number" } ];
+        const paramRapping = [ { id: "mot1", label: "TEMPERATURE MOTOR 1 (°C)", type: "number" }, { id: "mot2", label: "TEMPERATURE MOTOR 2 (°C)", type: "number" }, { id: "mot3", label: "TEMPERATURE MOTOR 3 (°C)", type: "number" }, { id: "mot4", label: "TEMPERATURE MOTOR 4 (°C)", type: "number" } ];
+        const paramConveying = [ { id: "row1", label: "ROW 1 (HANGAT/DINGIN)", type: "select", options: ["HANGAT", "DINGIN"] }, { id: "row2", label: "ROW 2 (HANGAT/DINGIN)", type: "select", options: ["HANGAT", "DINGIN"] }, { id: "row3", label: "ROW 3 (HANGAT/DINGIN)", type: "select", options: ["HANGAT", "DINGIN"] }, { id: "row4", label: "ROW 4 (HANGAT/DINGIN)", type: "select", options: ["HANGAT", "DINGIN"] }, { id: "elbow", label: "ELBOW (HANGAT/DINGIN)", type: "select", options: ["HANGAT", "DINGIN"] } ];
+
+        const dataEquipmentCommon = [
+            { nama_base: "CCCWP A", prefix: "cccwpa", parameter: paramCccwp }, { nama_base: "CCCWP B", prefix: "cccwpb", parameter: paramCccwp }, { nama_base: "CCCWP C", prefix: "cccwpc", parameter: paramCccwp },
+            { nama_base: "OCCWP A", prefix: "occwpa", parameter: paramCccwp }, { nama_base: "OCCWP B", prefix: "occwpb", parameter: paramCccwp }, { nama_base: "OCCWP C", prefix: "occwpc", parameter: paramCccwp },
+            { nama_base: "HEAT EXCHANGER", prefix: "he", parameter: [ { id: "a", label: "A (Ok/Not)", type: "select", options: ["Ok", "Not"] }, { id: "b", label: "B (Ok/Not)", type: "select", options: ["Ok", "Not"] }, { id: "c", label: "C (Ok/Not)", type: "select", options: ["Ok", "Not"] } ] },
+            { nama_base: "DIFFERENTIAL PRESSURE CCCW PUMP", prefix: "dp_cccwp", parameter: [ { id: "a", label: "A (Kg/cm2)", type: "number" }, { id: "b", label: "B (Kg/cm2)", type: "number" }, { id: "c", label: "C (Kg/cm2)", type: "number" } ] },
+            { nama_base: "TRAFO ESP 1", prefix: "tesp1", parameter: paramTrafoEsp }, { nama_base: "RAPPING ESP 1", prefix: "resp1", parameter: paramRapping },
+            { nama_base: "TRAFO ESP 2", prefix: "tesp2", parameter: paramTrafoEsp }, { nama_base: "RAPPING ESP 2", prefix: "resp2", parameter: paramRapping },
+            { nama_base: "TRAFO ESP 3", prefix: "tesp3", parameter: paramTrafoEsp }, { nama_base: "RAPPING ESP 3", prefix: "resp3", parameter: paramRapping },
+            { nama_base: "LINE CONVEYING ESP 1", prefix: "lcesp1", parameter: paramConveying }, { nama_base: "LINE CONVEYING ESP 2", prefix: "lcesp2", parameter: paramConveying }, { nama_base: "LINE CONVEYING ESP 3", prefix: "lcesp3", parameter: paramConveying },
+            { nama_base: "SERVICE AIR COMPRESSOR", prefix: "sac", parameter: [ { id: "temp_mota", label: "TEMPERATURE MOTOR A (°C)", type: "number" }, { id: "temp_motb", label: "TEMPERATURE MOTOR B (°C)", type: "number" }, { id: "temp_motc", label: "TEMPERATURE MOTOR C (°C)", type: "number" }, { id: "level_a", label: "LEVEL OIL PUMP A (%)", type: "number" }, { id: "level_b", label: "LEVEL OIL PUMP B (%)", type: "number" }, { id: "level_c", label: "LEVEL OIL PUMP C (%)", type: "number" }, { id: "dryer_a", label: "DRYER A (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "dryer_b", label: "DRYER B (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "dryer_c", label: "DRYER C (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "press_out", label: "PRESSURE OUTLET (Kg/Cm2)", type: "number" } ] },
+            { nama_base: "INSTRUMENT AIR COMPRESSOR", prefix: "iac", parameter: [ { id: "temp_mota", label: "TEMPERATURE MOTOR A", type: "number" }, { id: "temp_motb", label: "TEMPERATURE MOTOR B", type: "number" }, { id: "temp_motc", label: "TEMPERATURE MOTOR C", type: "number" }, { id: "dryer_a", label: "DRYER A (Run/ Stop)", type: "select", options: ["Run", "Stop"] }, { id: "dryer_b", label: "DRYER B (Run/ Stop)", type: "select", options: ["Run", "Stop"] }, { id: "dryer_c", label: "DRYER C (Run/ Stop)", type: "select", options: ["Run", "Stop"] }, { id: "press_out", label: "PRESSURE OUTLET (Kg/cm2)", type: "number" } ] },
+            { nama_base: "VESSEL/TANGKI", prefix: "vessel", parameter: [ { id: "sa_header", label: "SERVICE AIR HEADER (Kg/cm2)", type: "number" }, { id: "ia_header", label: "INSTRUMENT AIR HEADER (Kg/cm2)", type: "number" } ] }
+        ];
+
+        const dataOperator = {
+            "Turbin": ["Agus", "Huda", "Uji", "Evan", "Gusti", "Teguh", "David", "Barep"],
+            "Boiler": ["Harman", "Yusuf", "Egar", "Gandha", "Ferdi", "Meyer", "Aris", "Deo"],
+            "Common": ["Haidir", "Lutfi", "Adi", "Sultan", "Jimmy", "Sambodo", "Kiel", "Rizki"]
+        };
+        const tugasLokasi = {
+            "Turbin": ["Turbin 1", "Turbin 2", "Main Oil Tank 1", "Main Oil Tank 2"],
+            "Boiler": ["Coal Feeder Unit 1", "Coal Feeder Unit 2", "ID Fan Unit 1", "ID Fan Unit 2"],
+            "Common": ["Area Compressor", "CCCW"]
+        };
+
+        function tampilkanAlert(pesan) {
+            document.getElementById('custom-alert-msg').innerText = pesan;
+            document.getElementById('custom-alert').classList.add('show');
+        }
         function tutupAlert() { document.getElementById('custom-alert').classList.remove('show'); }
 
+        let currentNavIndex = 0;
+
         document.addEventListener("DOMContentLoaded", function() {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active', 'slide-right', 'slide-left'));
             document.getElementById('page-dashboard').classList.add('active');
+            
             const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
             const currentTheme = localStorage.getItem('theme');
             if (currentTheme === 'light') { document.body.classList.add('light-mode'); toggleSwitch.checked = true; }
+            
             toggleSwitch.addEventListener('change', function(e) {
                 if (e.target.checked) { document.body.classList.add('light-mode'); localStorage.setItem('theme', 'light'); }
                 else { document.body.classList.remove('light-mode'); localStorage.setItem('theme', 'dark'); }
             });
+            setTimeout(() => { updateBottomNav('page-dashboard'); }, 100); 
+
+            /* Logika Scroll Shrink Navigasi */
+            let lastScrollY = window.scrollY;
+            let isNavShrunk = false;
+            window.addEventListener('scroll', () => {
+                const currentScrollY = window.scrollY;
+                const nav = document.querySelector('.ig-floating-nav');
+                
+                if (currentScrollY > 50 && currentScrollY > lastScrollY) {
+                    if (!isNavShrunk) { nav.classList.add('shrunk'); isNavShrunk = true; }
+                } else if (currentScrollY < lastScrollY || currentScrollY <= 50) {
+                    if (isNavShrunk) { nav.classList.remove('shrunk'); isNavShrunk = false; }
+                }
+                lastScrollY = currentScrollY;
+            });
+
+            /* Menjaga presisi indikator setiap kali nav bar berganti dimensi */
+            const navObserver = new ResizeObserver(() => {
+                const activePage = document.querySelector('.page.active');
+                if(activePage) updateBottomNav(activePage.id);
+            });
+            navObserver.observe(document.querySelector('.ig-floating-nav'));
         });
 
+        function updateBottomNav(pageId) {
+            let activeIndex = -1;
+            
+            if (pageId === 'page-dashboard') activeIndex = 0;
+            else if (pageId.includes('logsheet') || pageId.includes('turbin') || pageId.includes('boiler') || pageId.includes('common') || pageId.includes('login') || pageId.includes('form') || pageId.includes('kamera')) activeIndex = 1;
+            else if (pageId === 'page-flm') activeIndex = 2;
+            else if (pageId === 'page-temuan') activeIndex = 3;
+
+            document.querySelectorAll('.ig-nav-item').forEach(item => item.classList.remove('active'));
+            
+            if (activeIndex !== -1) {
+                currentNavIndex = activeIndex;
+                const targetItem = document.querySelector(`.ig-nav-item[data-index="${activeIndex}"]`);
+                if (targetItem) {
+                    targetItem.classList.add('active');
+                    const indicator = document.getElementById('nav-indicator');
+                    indicator.style.width = `${targetItem.offsetWidth}px`;
+                    indicator.style.transform = `translateX(${targetItem.offsetLeft}px)`;
+                }
+            }
+        }
+
+        /* Fungsi Untuk Handle Klik Navigasi Bawah (Menyesuaikan Arah Slide) */
+        function handleNavClick(pageId, targetIndex) {
+            let direction = 'right';
+            if (targetIndex < currentNavIndex) direction = 'left';
+            else if (targetIndex === currentNavIndex) return; // Jika klik yg sama, abaikan
+            
+            currentNavIndex = targetIndex;
+            changePage(pageId, direction);
+        }
+
+        function changePage(pageId, direction = 'right') {
+            document.querySelectorAll('.page').forEach(p => {
+                p.classList.remove('active', 'slide-right', 'slide-left');
+            });
+            const target = document.getElementById(pageId);
+            target.classList.add('active');
+            
+            if (direction === 'right') target.classList.add('slide-right');
+            else if (direction === 'left') target.classList.add('slide-left');
+            
+            window.scrollTo(0, 0); 
+            updateBottomNav(pageId);
+        }
+
+        function bukaFormTurbin(unit, direction = 'right') {
+            activeUnitName = unit;
+            const nomorUnit = unit === "Unit 1" ? "1" : "2";
+            document.getElementById("judul-turbin").innerText = "Turbin " + unit;
+            const container = document.getElementById("container-turbin");
+            container.innerHTML = ""; 
+            
+            dataEquipmentTurbin.forEach(eq => {
+                const namaEquipment = eq.nama_base.replace(/{U}/g, nomorUnit);
+                const card = document.createElement("div");
+                card.className = "ios-card";
+                
+                const h3 = document.createElement("h3");
+                h3.className = "equipment-title";
+                h3.innerText = namaEquipment;
+                card.appendChild(h3);
+                
+                eq.parameter.forEach(param => {
+                    const label = document.createElement("label");
+                    label.innerText = param.label;
+                    card.appendChild(label);
+                    const elementId = `param_turbin_${eq.prefix}_${nomorUnit}_${param.id}`;
+                    
+                    if (param.type === "number") {
+                        const input = document.createElement("input");
+                        input.type = "number"; input.id = elementId; input.placeholder = "0.0"; input.step = "0.1";
+                        card.appendChild(input);
+                    } else if (param.type === "select") {
+                        const select = document.createElement("select");
+                        select.id = elementId;
+                        const optDefault = document.createElement("option");
+                        optDefault.value = ""; optDefault.innerText = "- Pilih -"; select.appendChild(optDefault);
+                        param.options.forEach(optVal => {
+                            const opt = document.createElement("option"); opt.value = optVal; opt.innerText = optVal; select.appendChild(opt);
+                        });
+                        card.appendChild(select);
+                    }
+                });
+                container.appendChild(card);
+            });
+            changePage('page-form-turbin', direction);
+        }
+
+        function bukaFormBoiler(unit, direction = 'right') {
+            activeUnitName = unit;
+            const nomorUnit = unit === "Unit 1" ? "1" : "2";
+            document.getElementById("judul-boiler").innerText = "Boiler " + unit;
+            const container = document.getElementById("container-boiler");
+            container.innerHTML = ""; 
+            
+            dataEquipmentBoiler.forEach(eq => {
+                const namaEquipment = eq.nama_base.replace(/{U}/g, nomorUnit);
+                const card = document.createElement("div");
+                card.className = "ios-card";
+                
+                const h3 = document.createElement("h3");
+                h3.className = "equipment-title";
+                h3.innerText = namaEquipment;
+                card.appendChild(h3);
+                
+                eq.parameter.forEach(param => {
+                    const label = document.createElement("label");
+                    label.innerText = param.label;
+                    card.appendChild(label);
+                    const elementId = `param_boiler_${eq.prefix}_${nomorUnit}_${param.id}`;
+                    
+                    if (param.type === "number") {
+                        const input = document.createElement("input");
+                        input.type = "number"; input.id = elementId; input.placeholder = "0.0"; input.step = "0.1";
+                        card.appendChild(input);
+                    } else if (param.type === "select") {
+                        const select = document.createElement("select");
+                        select.id = elementId;
+                        const optDefault = document.createElement("option");
+                        optDefault.value = ""; optDefault.innerText = "- Pilih -"; select.appendChild(optDefault);
+                        param.options.forEach(optVal => {
+                            const opt = document.createElement("option"); opt.value = optVal; opt.innerText = optVal; select.appendChild(opt);
+                        });
+                        card.appendChild(select);
+                    }
+                });
+                container.appendChild(card);
+            });
+            changePage('page-form-boiler', direction);
+        }
+
+        function bukaFormCommon(direction = 'right') {
+            activeUnitName = "Common Area";
+            const container = document.getElementById("container-common");
+            container.innerHTML = ""; 
+            
+            dataEquipmentCommon.forEach(eq => {
+                const card = document.createElement("div");
+                card.className = "ios-card";
+                
+                const h3 = document.createElement("h3");
+                h3.className = "equipment-title";
+                h3.innerText = eq.nama_base;
+                card.appendChild(h3);
+                
+                eq.parameter.forEach(param => {
+                    const label = document.createElement("label");
+                    label.innerText = param.label;
+                    card.appendChild(label);
+                    const elementId = `param_common_${eq.prefix}_${param.id}`;
+                    
+                    if (param.type === "number") {
+                        const input = document.createElement("input");
+                        input.type = "number"; input.id = elementId; input.placeholder = "0.0"; input.step = "0.1";
+                        card.appendChild(input);
+                    } else if (param.type === "select") {
+                        const select = document.createElement("select");
+                        select.id = elementId;
+                        const optDefault = document.createElement("option");
+                        optDefault.value = ""; optDefault.innerText = "- Pilih -"; select.appendChild(optDefault);
+                        param.options.forEach(optVal => {
+                            const opt = document.createElement("option"); opt.value = optVal; opt.innerText = optVal; select.appendChild(opt);
+                        });
+                        card.appendChild(select);
+                    }
+                });
+                container.appendChild(card);
+            });
+            changePage('page-form-common', direction);
+        }
+
+        async function kirimDataTurbin() {
+            const tanggal = document.getElementById('turbin-tgl').value;
+            const jam = document.getElementById('turbin-jam').value;
+            const nama = document.getElementById('turbin-nama').value;
+            const regu = document.getElementById('turbin-regu').value;
+            if (!tanggal || !jam || !nama || !regu) { tampilkanAlert("Harap lengkapi Tanggal, Nama, Regu, dan Jam Log Sheet."); return; }
+            const nomorUnit = activeUnitName === "Unit 1" ? "1" : "2";
+            const dataPeralatan = {};
+            dataEquipmentTurbin.forEach(eq => {
+                eq.parameter.forEach(param => {
+                    const elementId = `param_turbin_${eq.prefix}_${nomorUnit}_${param.id}`;
+                    const element = document.getElementById(elementId);
+                    if (element) dataPeralatan[elementId] = element.value;
+                });
+            });
+            document.getElementById('loading-overlay').classList.add('show');
+            try {
+                await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipe_laporan: "parameter_turbin", unit: activeUnitName, tanggal: tanggal, jam: jam, nama: nama, regu: regu, data_mesin: dataPeralatan }) });
+                document.getElementById('loading-overlay').classList.remove('show');
+                tampilkanAlert("Log Sheet Turbin " + activeUnitName + " berhasil dikirim!");
+                changePage('page-dashboard', 'left');
+            } catch (error) { document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Gagal mengirim parameter."); }
+        }
+
+        async function kirimDataBoiler() {
+            const tanggal = document.getElementById('boiler-tgl').value;
+            const jam = document.getElementById('boiler-jam').value;
+            const nama = document.getElementById('boiler-nama').value;
+            const regu = document.getElementById('boiler-regu').value;
+            if (!tanggal || !jam || !nama || !regu) { tampilkanAlert("Harap lengkapi Tanggal, Nama, Regu, dan Jam Log Sheet."); return; }
+            const nomorUnit = activeUnitName === "Unit 1" ? "1" : "2";
+            const dataPeralatan = {};
+            dataEquipmentBoiler.forEach(eq => {
+                eq.parameter.forEach(param => {
+                    const elementId = `param_boiler_${eq.prefix}_${nomorUnit}_${param.id}`;
+                    const element = document.getElementById(elementId);
+                    if (element) dataPeralatan[elementId] = element.value;
+                });
+            });
+            document.getElementById('loading-overlay').classList.add('show');
+            try {
+                await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipe_laporan: "parameter_boiler", unit: activeUnitName, tanggal: tanggal, jam: jam, nama: nama, regu: regu, data_mesin: dataPeralatan }) });
+                document.getElementById('loading-overlay').classList.remove('show');
+                tampilkanAlert("Log Sheet Boiler " + activeUnitName + " berhasil dikirim!");
+                changePage('page-dashboard', 'left');
+            } catch (error) { document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Gagal mengirim parameter Boiler."); }
+        }
+
+        async function kirimDataCommon() {
+            const tanggal = document.getElementById('common-tgl').value;
+            const jam = document.getElementById('common-jam').value;
+            const nama = document.getElementById('common-nama').value;
+            const regu = document.getElementById('common-regu').value;
+            if (!tanggal || !jam || !nama || !regu) { tampilkanAlert("Harap lengkapi Tanggal, Nama, Regu, dan Jam Log Sheet."); return; }
+            const dataPeralatan = {};
+            dataEquipmentCommon.forEach(eq => {
+                eq.parameter.forEach(param => {
+                    const elementId = `param_common_${eq.prefix}_${param.id}`;
+                    const element = document.getElementById(elementId);
+                    if (element) dataPeralatan[elementId] = element.value;
+                });
+            });
+            document.getElementById('loading-overlay').classList.add('show');
+            try {
+                await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipe_laporan: "parameter_common", unit: activeUnitName, tanggal: tanggal, jam: jam, nama: nama, regu: regu, data_mesin: dataPeralatan }) });
+                document.getElementById('loading-overlay').classList.remove('show');
+                tampilkanAlert("Log Sheet Lokal Common berhasil dikirim!");
+                changePage('page-dashboard', 'left');
+            } catch (error) { document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Gagal mengirim parameter Common."); }
+        }
+
+        function mulaiFormSelfie() {
+            const pos = document.getElementById('posisi-select').value;
+            const selectNama = document.getElementById('nama-operator');
+            selectNama.innerHTML = "";
+            dataOperator[pos].forEach(nama => {
+                let opt = document.createElement('option'); opt.value = nama; opt.innerHTML = nama; selectNama.appendChild(opt);
+            });
+            changePage('page-form', 'right');
+        }
+
+        function bukaKameraHalaman() {
+            const pos = document.getElementById('posisi-select').value;
+            const selectLokasi = document.getElementById('lokasi-select');
+            selectLokasi.innerHTML = "";
+            tugasLokasi[pos].forEach(loc => {
+                let opt = document.createElement('option'); opt.value = loc; opt.innerHTML = loc; selectLokasi.appendChild(opt);
+            });
+            changePage('page-kamera', 'right');
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } }).then(stream => { document.getElementById('video').srcObject = stream; }).catch(err => tampilkanAlert("Izin akses kamera diperlukan."));
+        }
+
+        const video = document.getElementById('video'), gallery = document.getElementById('gallery'), snap = document.getElementById('snap'), flash = document.getElementById('flash-overlay');
+        snap.addEventListener('click', async () => {
+            await new Promise(r => setTimeout(r, 200));
+            if (flashToggle.checked) flash.style.opacity = '1';
+            setTimeout(() => {
+                const lokasi = document.getElementById('lokasi-select').value;
+                const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.scale(-1, 1); ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+                ctx.setTransform(1, 0, 0, 1, 0, 0); 
+                const now = new Date(); const tgl = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); const hari = now.toLocaleDateString('id-ID', { weekday: 'long' }); const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+                ctx.fillStyle = "white"; ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 5; ctx.font = "bold 40px -apple-system"; ctx.fillText(lokasi.toUpperCase(), 40, canvas.height - 110); ctx.font = "30px -apple-system"; ctx.fillText(`${hari}, ${tgl} | ${jam}`, 40, canvas.height - 60);
+                const div = document.createElement('div'); div.className = 'foto-item'; div.dataset.lokasi = lokasi;
+                div.innerHTML = `<p style="color:#FF9500; font-weight:bold; text-align:left; padding-left:10px; margin-bottom:10px; margin-top:0;">${lokasi}</p><img src="${canvas.toDataURL('image/png')}">`;
+                const btnHapus = document.createElement('button'); btnHapus.className = 'btn-hapus'; btnHapus.innerHTML = trashSVG; btnHapus.onclick = () => div.remove();
+                div.appendChild(btnHapus); gallery.appendChild(div); flash.style.opacity = '0';
+            }, 100);
+        });
+
+        async function kirimLogsheetSelfie() {
+            const fotoItems = document.querySelectorAll('.foto-item');
+            if (fotoItems.length === 0) { tampilkanAlert("Ambil minimal satu foto terlebih dahulu."); return; }
+            document.getElementById('loading-overlay').classList.add('show');
+            try {
+                const janjiKirim = [];
+                for (let item of fotoItems) {
+                    const dataKirim = { tipe_laporan: "logsheet", posisi: document.getElementById('posisi-select').value, tanggal: document.getElementById('tgl-dinas').value, shift: document.getElementById('shift-select').value, regu: document.getElementById('regu-select').value, operator: document.getElementById('nama-operator').value, lokasi: item.dataset.lokasi, jam: document.getElementById('jam-log').value, foto: item.querySelector('img').src };
+                    janjiKirim.push(fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dataKirim) }));
+                }
+                await Promise.all(janjiKirim);
+                document.getElementById('loading-overlay').classList.remove('show');
+                tampilkanAlert("Data Log Sheet Selfie berhasil dikirim.");
+                document.getElementById('gallery').innerHTML = ""; changePage('page-dashboard', 'left'); document.getElementById('tgl-dinas').value = ""; document.getElementById('jam-log').value = "";
+            } catch (error) { document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Gagal mengirim data."); }
+        }
+
         document.getElementById('file-flm').addEventListener('change', function() {
-            const file = this.files[0];
-            if (!file) return;
+            const file = this.files[0]; if (!file) return;
             const galleryFLM = document.getElementById('gallery-flm');
             if (galleryFLM.children.length >= 5) { tampilkanAlert("Maksimal 5 foto."); this.value = ""; return; }
             const reader = new FileReader();
             reader.onload = function(e) {
                 const div = document.createElement('div'); div.className = 'preview-wrapper'; div.style.display = 'block';
-                div.innerHTML = `<img src="${e.target.result}"><button class="btn-hapus" onclick="this.parentElement.remove()">${trashSVG}</button>`;
+                div.innerHTML = `<img src="${e.target.result}" alt="FLM Preview"><button class="btn-hapus" onclick="this.parentElement.remove()">${trashSVG}</button>`;
                 galleryFLM.appendChild(div);
             }
-            reader.readAsDataURL(file);
-            this.value = ""; 
+            reader.readAsDataURL(file); this.value = ""; 
         });
 
         function prosesFileTemuan(file) {
-            const wrapper = document.getElementById('wrap-temuan');
-            const imgPreview = document.getElementById('preview-temuan-img');
-            const vidPreview = document.getElementById('preview-temuan-vid');
+            const wrapper = document.getElementById('wrap-temuan'), imgPreview = document.getElementById('preview-temuan-img'), vidPreview = document.getElementById('preview-temuan-vid');
             if (!file) { hapusTemuan(); return; }
             const reader = new FileReader();
             if (file.type.startsWith('video/')) {
-                if (file.size > 15 * 1024 * 1024) { tampilkanAlert("Video terlalu besar."); hapusTemuan(); return; }
-                reader.onload = function(e) {
-                    imgPreview.style.display = 'none'; vidPreview.src = e.target.result; vidPreview.style.display = 'block'; wrapper.style.display = 'block'; base64TemuanFinal = e.target.result;
-                };
-                reader.readAsDataURL(file);
+                if (file.size > 15 * 1024 * 1024) { tampilkanAlert("Maksimal 15MB."); hapusTemuan(); return; }
+                reader.onload = function(e) { imgPreview.style.display = 'none'; vidPreview.src = e.target.result; vidPreview.style.display = 'block'; wrapper.style.display = 'block'; base64TemuanFinal = e.target.result; }; reader.readAsDataURL(file);
             } else if (file.type.startsWith('image/')) {
                 reader.onload = function(event) {
                     const img = new Image();
                     img.onload = function() {
-                        const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
-                        const MAX_WIDTH = 1280; const MAX_HEIGHT = 1280;
-                        let width = img.width; let height = img.height;
-                        if (width > height) { if (width > MAX_WIDTH) { height = Math.round(height *= MAX_WIDTH / width); width = MAX_WIDTH; } }
-                        else { if (height > MAX_HEIGHT) { width = Math.round(width *= MAX_HEIGHT / height); height = MAX_HEIGHT; } }
+                        const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); const MAX_WIDTH = 1280; const MAX_HEIGHT = 1280; let width = img.width; let height = img.height;
+                        if (width > height) { if (width > MAX_WIDTH) { height = Math.round(height *= MAX_WIDTH / width); width = MAX_WIDTH; } } else { if (height > MAX_HEIGHT) { width = Math.round(width *= MAX_HEIGHT / height); height = MAX_HEIGHT; } }
                         canvas.width = width; canvas.height = height; ctx.drawImage(img, 0, 0, width, height);
-                        const now = new Date(); const tgl = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-                        const hari = now.toLocaleDateString('id-ID', { weekday: 'long' }); const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
-                        const unitText = document.getElementById('temuan-unit-select').value.toUpperCase();
-                        const reguText = "REGU " + document.getElementById('temuan-regu-select').value.toUpperCase();
-                        const alatInput = document.getElementById('temuan-nama-alat').value.trim().toUpperCase();
-                        const alatText = alatInput ? alatInput : "BELUM DITENTUKAN";
-                        const fontSize = Math.max(Math.floor(canvas.width / 25), 30);
-                        ctx.fillStyle = "white"; ctx.shadowColor = "rgba(0,0,0,0.9)"; ctx.shadowBlur = 6; ctx.textAlign = "left";
+                        const now = new Date(); const tgl = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); const hari = now.toLocaleDateString('id-ID', { weekday: 'long' }); const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+                        const unitText = document.getElementById('temuan-unit-select').value.toUpperCase(); const reguText = "REGU " + document.getElementById('temuan-regu-select').value.toUpperCase(); const alatInput = document.getElementById('temuan-nama-alat').value.trim().toUpperCase(); const alatText = alatInput ? alatInput : "BELUM DITENTUKAN";
+                        const fontSize = Math.max(Math.floor(canvas.width / 25), 30); ctx.fillStyle = "white"; ctx.shadowColor = "rgba(0,0,0,0.9)"; ctx.shadowBlur = 6; ctx.textAlign = "left";
                         ctx.font = `bold ${fontSize}px -apple-system, sans-serif`; ctx.fillText(`${unitText} | ${reguText}`, 40, canvas.height - (fontSize * 3.4));
                         ctx.font = `bold ${fontSize * 0.9}px -apple-system, sans-serif`; ctx.fillStyle = "#FF9500"; ctx.fillText(alatText, 40, canvas.height - (fontSize * 2.1));
                         ctx.font = `${fontSize * 0.8}px -apple-system, sans-serif`; ctx.fillStyle = "white"; ctx.fillText(`${hari}, ${tgl} | ${jam}`, 40, canvas.height - (fontSize * 0.8));
-                        const finalBase64 = canvas.toDataURL('image/jpeg', 0.85);
-                        vidPreview.style.display = 'none'; vidPreview.src = ""; imgPreview.src = finalBase64; imgPreview.style.display = 'block'; wrapper.style.display = 'block'; base64TemuanFinal = finalBase64;
+                        const finalBase64 = canvas.toDataURL('image/jpeg', 0.85); vidPreview.style.display = 'none'; vidPreview.src = ""; imgPreview.src = finalBase64; imgPreview.style.display = 'block'; wrapper.style.display = 'block'; base64TemuanFinal = finalBase64;
                     }
                     img.src = event.target.result;
                 }
                 reader.readAsDataURL(file);
             }
         }
-
         function hapusTemuan() { document.getElementById('file-temuan').value = ""; base64TemuanFinal = ""; document.getElementById('preview-temuan-img').src = ""; document.getElementById('preview-temuan-vid').src = ""; document.getElementById('preview-temuan-img').style.display = 'none'; document.getElementById('preview-temuan-vid').style.display = 'none'; document.getElementById('wrap-temuan').style.display = 'none'; }
         document.getElementById('file-temuan').addEventListener('change', function() { prosesFileTemuan(this.files[0]); });
 
-        const dataOperator = { "Turbin": ["Agus", "Huda", "Uji", "Evan", "Gusti", "Teguh", "David", "Barep", "Deo"], "Boiler": ["Harman", "Yusuf", "Egar", "Gandha", "Ferdi", "Meyer", "Aris", "Deo"], "Common": ["Haidir", "Lutfi", "Adi", "Sultan", "Jimmy", "Sambodo", "Kiel", "Rizki", "Deo"] };
-        const tugasLokasi = { "Turbin": ["Turbin 1", "Turbin 2", "Main Oil Tank 1", "Main Oil Tank 2"], "Boiler": ["Coal Feeder Unit 1", "Coal Feeder Unit 2", "ID Fan Unit 1", "ID Fan Unit 2"], "Common": ["Area Compressor", "CCCW"] };
-        
-        function changePage(pageId) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(pageId).classList.add('active'); }
-        function mulaiForm() { const pos = document.getElementById('posisi-select').value; const selectNama = document.getElementById('nama-operator'); selectNama.innerHTML = ""; dataOperator[pos].forEach(nama => { let opt = document.createElement('option'); opt.value = nama; opt.innerHTML = nama; selectNama.appendChild(opt); }); changePage('page-form'); }
-        function bukaKameraHalaman() { const pos = document.getElementById('posisi-select').value; const selectLokasi = document.getElementById('lokasi-select'); selectLokasi.innerHTML = ""; tugasLokasi[pos].forEach(loc => { let opt = document.createElement('option'); opt.value = loc; opt.innerHTML = loc; selectLokasi.appendChild(opt); }); changePage('page-kamera'); navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } }).then(stream => { document.getElementById('video').srcObject = stream; }).catch(err => tampilkanAlert("Izin akses kamera diperlukan.")); }
-
-        const video = document.getElementById('video'), gallery = document.getElementById('gallery'), snap = document.getElementById('snap'), flash = document.getElementById('flash-overlay');
-        snap.addEventListener('click', async () => {
-            await new Promise(r => setTimeout(r, 200)); if (flashToggle.checked) flash.style.opacity = '1';
-            setTimeout(() => {
-                const lokasi = document.getElementById('lokasi-select').value;
-                const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-                const ctx = canvas.getContext('2d'); ctx.scale(-1, 1); ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height); ctx.setTransform(1, 0, 0, 1, 0, 0); 
-                const now = new Date(); const tgl = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); const hari = now.toLocaleDateString('id-ID', { weekday: 'long' }); const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
-                ctx.fillStyle = "white"; ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 5; ctx.font = "bold 40px -apple-system"; ctx.fillText(lokasi.toUpperCase(), 40, canvas.height - 110); ctx.font = "30px -apple-system"; ctx.fillText(`${hari}, ${tgl} | ${jam}`, 40, canvas.height - 60);
-                const div = document.createElement('div'); div.className = 'foto-item'; div.dataset.lokasi = lokasi; div.innerHTML = `<p style="color:#FF9500; font-weight:bold; text-align:left; padding-left:10px; margin-bottom:10px; margin-top:0;">${lokasi}</p><img src="${canvas.toDataURL('image/png')}">`;
-                const btnHapus = document.createElement('button'); btnHapus.className = 'btn-hapus'; btnHapus.innerHTML = trashSVG; btnHapus.onclick = () => div.remove(); div.appendChild(btnHapus); gallery.appendChild(div); flash.style.opacity = '0';
-            }, 100);
-        });
-
-        async function kirimLogsheet() {
-            const fotoItems = document.querySelectorAll('.foto-item');
-            if (fotoItems.length === 0) { tampilkanAlert("Ambil minimal satu foto."); return; }
-            document.getElementById('loading-overlay').classList.add('show');
-            try {
-                for (let item of fotoItems) {
-                    const dataKirim = { tipe_laporan: "logsheet", posisi: document.getElementById('posisi-select').value, tanggal: document.getElementById('tgl-dinas').value, shift: document.getElementById('shift-select').value, regu: document.getElementById('regu-select').value, operator: document.getElementById('nama-operator').value, lokasi: item.dataset.lokasi, jam: document.getElementById('jam-log').value, foto: item.querySelector('img').src };
-                    await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dataKirim) });
-                }
-                document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Berhasil."); document.getElementById('gallery').innerHTML = ""; changePage('page-dashboard');
-            } catch (error) { document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Gagal."); }
-        }
-
         async function kirimFLM() {
-            const regu = document.getElementById('flm-regu-select').value;
-            const fotoItems = document.querySelectorAll('#gallery-flm .preview-wrapper img');
-            if (fotoItems.length === 0) { tampilkanAlert("Upload minimal satu foto."); return; }
+            const regu = document.getElementById('flm-regu-select').value; const fotoItems = document.querySelectorAll('#gallery-flm .preview-wrapper img');
+            if (fotoItems.length === 0) { tampilkanAlert("Harap upload minimal satu foto FLM/5S."); return; }
             document.getElementById('loading-overlay').classList.add('show');
             try {
-                for(let img of fotoItems) { await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipe_laporan: "flm", regu: regu, unit: "FLM & 5S", foto: img.src }) }); }
-                document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Berhasil."); document.getElementById('gallery-flm').innerHTML = ""; changePage('page-dashboard');
-            } catch (error) { document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Gagal."); }
+                const janjiKirim = [];
+                for(let img of fotoItems) { janjiKirim.push(fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipe_laporan: "flm", regu: regu, unit: "FLM & 5S", foto: img.src }) })); }
+                await Promise.all(janjiKirim); document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Laporan FLM berhasil dikirim!"); document.getElementById('gallery-flm').innerHTML = ""; changePage('page-dashboard', 'left');
+            } catch (error) { document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Gagal mengirim laporan FLM."); }
         }
 
         async function kirimTemuan() {
-            const regu = document.getElementById('temuan-regu-select').value;
-            const unit = document.getElementById('temuan-unit-select').value;
-            const srcTemuan = base64TemuanFinal;
-            const namaAlat = document.getElementById('temuan-nama-alat').value.trim();
-            const deskripsi = document.getElementById('deskripsi-temuan').value.trim();
-            if (!srcTemuan) { tampilkanAlert("Lampirkan foto/video."); return; }
-            if (!namaAlat || !deskripsi) { tampilkanAlert("Isi Nama Alat dan Deskripsi."); return; }
+            const regu = document.getElementById('temuan-regu-select').value; const unit = document.getElementById('temuan-unit-select').value; const srcTemuan = base64TemuanFinal; const namaAlat = document.getElementById('temuan-nama-alat').value.trim(); const deskripsi = document.getElementById('deskripsi-temuan').value.trim();
+            if (!srcTemuan) { tampilkanAlert("Harap lampirkan Foto atau Video."); return; }
+            if (!namaAlat || !deskripsi) { tampilkanAlert("Harap isi Nama Alat dan Deskripsi."); return; }
             document.getElementById('loading-overlay').classList.add('show');
             try {
-                await fetch(GAS_URL, { 
-                    method: 'POST', mode: 'no-cors', 
-                    body: JSON.stringify({ 
-                        tipe_laporan: "temuan", 
-                        regu: regu, 
-                        unit: unit, 
-                        nama_alat: namaAlat, 
-                        deskripsi: deskripsi, 
-                        foto: srcTemuan 
-                    }) 
-                });
-                document.getElementById('loading-overlay').classList.remove('show');
-                tampilkanAlert("Berhasil.");
-                document.getElementById('temuan-nama-alat').value = "";
-                document.getElementById('deskripsi-temuan').value = "";
-                hapusTemuan();
-                changePage('page-dashboard');
-            } catch (error) { document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Gagal."); }
+                await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipe_laporan: "temuan", regu: regu, unit: unit, nama_alat: namaAlat, deskripsi: deskripsi, foto: srcTemuan }) });
+                document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Laporan Temuan berhasil dikirim!"); document.getElementById('temuan-nama-alat').value = ""; document.getElementById('deskripsi-temuan').value = ""; hapusTemuan(); changePage('page-dashboard', 'left');
+            } catch (error) { document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Gagal mengirim laporan temuan."); }
         }
     </script>
 </body>
