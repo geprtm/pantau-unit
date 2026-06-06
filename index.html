@@ -54,38 +54,75 @@
         /* --- HOME HEADER TATA LETAK RAPI --- */
         .main-header { position: relative; padding: 15px 0 5px 0; z-index: 100; width: 100%; display: flex; flex-direction: column; align-items: center; }
 
-        /* --- HEADER OPSI: KOLOM OVAL MELAYANG SUPER TRANSPARAN --- */
+        /* --- HEADER OPSI --- */
         .header-bar { 
             position: sticky; 
             top: 15px; 
-            background: rgba(18, 18, 18, 0.25); /* Jauh lebih transparan */
-            backdrop-filter: blur(25px) saturate(200%); 
-            -webkit-backdrop-filter: blur(25px) saturate(200%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 40px; 
-            padding: 12px 15px;
-            margin: 10px auto 25px auto; 
-            min-height: 44px; 
-            width: 70%;
-            max-width: 380px;
             z-index: 100;
             display: flex; 
             align-items: center; 
             justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin: 10px auto 25px auto; 
+            width: 100%; 
+            min-height: 44px; 
             box-sizing: border-box;
-            transition: background 0.3s;
         }
-        body.light-mode .header-bar {
-            background: rgba(255, 255, 255, 0.35); /* Lebih transparan */
+
+        .btn-back-icon { 
+            position: absolute; 
+            left: 0; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            background: rgba(18, 18, 18, 0.25); 
+            backdrop-filter: blur(25px) saturate(200%); 
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px; 
+            padding: 8px 18px; 
+            color: var(--text); 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: opacity 0.3s, transform 0.2s, background 0.3s; 
+            z-index: 110; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        body.light-mode .btn-back-icon {
+            background: rgba(255, 255, 255, 0.35); 
             border: 1px solid rgba(0, 0, 0, 0.08);
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
-
-        .btn-back-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text); cursor: pointer; padding: 10px; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s, transform 0.2s; z-index: 110; }
         .btn-back-icon:active { opacity: 0.5; transform: translateY(-50%) scale(0.9); }
         .btn-back-icon svg { width: 22px; height: 22px; }
-        .form-title { margin: 0; font-size: 18px; color: var(--accent); font-weight: bold; text-align: center; width: 100%; padding: 0 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.3px;}
+        
+        .form-title { 
+            margin: 0; 
+            font-size: 16px; 
+            color: var(--accent); 
+            font-weight: bold; 
+            text-align: center; 
+            
+            /* Pembungkus Oval Transparan */
+            background: rgba(18, 18, 18, 0.25); 
+            backdrop-filter: blur(25px) saturate(200%); 
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 10px 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            letter-spacing: -0.3px;
+            max-width: 65%;
+        }
+        body.light-mode .form-title {
+            background: rgba(255, 255, 255, 0.35); 
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
 
         .page { display: none; width: 100%; flex: 1; position: relative; } 
         .active { display: flex; flex-direction: column; }
@@ -99,7 +136,6 @@
         
         h1 { font-size: 42px; font-weight: 800; color: var(--accent); margin: 0 0 5px 0; }
         .subtitle { font-size: 15px; margin-top: -5px; margin-bottom: 25px; opacity: 0.7; font-weight: 600; letter-spacing: -0.5px; }
-        .equipment-title { font-size: 16px; font-weight: 700; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 10px; margin: 0 0 5px 0; text-align: left; }
         label { font-size: 12px; opacity: 0.7; display: block; margin-top: 5px; text-align: left; font-weight: 500;}
         
         select, input[type="text"], input[type="number"], input[type="date"], input[type="time"] { 
@@ -132,13 +168,6 @@
         .menu-item.danger .menu-text { color: #ff453a; }
         .menu-item.danger .menu-arrow { color: #ff3b30; }
         body.light-mode .menu-item.danger .menu-text, body.light-mode .menu-item.danger .menu-arrow { color: #ff3b30; }
-
-        /* --- KARTU OPSI UNIT VERTIKAL DI TENGAH --- */
-        .unit-card-container { display: flex; flex-direction: column; gap: 15px; justify-content: center; align-items: center; margin: 20px 0; padding: 0 5px; flex: 1; }
-        .unit-card-item { width: 85%; max-width: 300px; background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; padding: 25px; display: flex; align-items: center; justify-content: center; gap: 15px; cursor: pointer; transition: transform 0.2s, background 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .unit-card-item:active { transform: scale(0.95); background: rgba(255,149,0,0.1); border-color: var(--accent); }
-        .unit-card-icon { font-size: 28px; }
-        .unit-card-text { font-size: 18px; font-weight: bold; color: var(--text); }
 
         input[type="file"] { background: rgba(255, 149, 0, 0.05); color: var(--text); border: 1px dashed var(--accent); padding: 15px; width: 100%; border-radius: 16px; font-size: 14px; box-sizing: border-box; cursor: pointer; margin-top: 5px; font-family: inherit; }
         input[type="file"]::file-selector-button { background: var(--accent); color: white; border: none; padding: 8px 12px; border-radius: 10px; margin-right: 10px; cursor: pointer; font-weight: bold; font-family: inherit; }
@@ -175,8 +204,8 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 70%; /* Diubah menjadi 70% */
-            max-width: 280px; /* Lebar maksimal juga dikurangi */
+            width: 70%; 
+            max-width: 280px; 
             background: rgba(18, 18, 18, 0.25);
             backdrop-filter: blur(25px) saturate(200%);
             -webkit-backdrop-filter: blur(25px) saturate(200%);
@@ -185,7 +214,7 @@
             display: flex;
             justify-content: space-between; 
             align-items: center;
-            padding: 6px 10px; /* Padding dikurangi */
+            padding: 6px 10px; 
             z-index: 9999;
             box-shadow: 0 12px 35px rgba(0,0,0,0.4);
             transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
@@ -269,10 +298,11 @@
             </div>
             
             <div class="menu-list" style="margin-top: 10px;">
-                <div class="menu-item" onclick="changePage('page-pilih-logsheet', 'right')">
+                <!-- Opsi ini langsung membuka Log Sheet Selfie -->
+                <div class="menu-item" onclick="changePage('page-login', 'right')">
                     <div class="menu-item-left">
-                        <div class="menu-icon">📝</div>
-                        <div class="menu-text">Log Sheet</div>
+                        <div class="menu-icon">📸</div>
+                        <div class="menu-text">Log Sheet Selfie</div>
                     </div>
                     <div class="menu-arrow">❯</div>
                 </div>
@@ -295,7 +325,7 @@
                     <div class="menu-arrow">❯</div>
                 </div>
             </div>
-            <p style="font-size: 11px; margin-top: 30px; opacity: 0.4; font-weight: 500;">v3.2 (Operator Common Update)</p>
+            <p style="font-size: 11px; margin-top: 30px; opacity: 0.4; font-weight: 500;">v3.5 (Redirect Link & Selfie Update)</p>
         </div>
 
         <div id="page-pilih-logsheet" class="page">
@@ -303,7 +333,8 @@
                 <button class="btn-back-icon" onclick="changePage('page-dashboard', 'left')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </button>
-                <h2 class="form-title">Jenis Log Sheet</h2>
+                <!-- Judul diperbarui menjadi Pilih Form -->
+                <h2 class="form-title">Pilih Form</h2>
             </div>
             
             <div class="menu-list">
@@ -333,21 +364,21 @@
             </div>
             
             <div class="menu-list">
-                <div class="menu-item" onclick="changePage('page-pilih-unit-turbin', 'right')">
+                <div class="menu-item" onclick="pilihArea('Turbin')">
                     <div class="menu-item-left">
                         <div class="menu-icon">🏭</div>
                         <div class="menu-text">Operator Turbin</div>
                     </div>
                     <div class="menu-arrow">❯</div>
                 </div>
-                <div class="menu-item" onclick="changePage('page-pilih-unit-boiler', 'right')">
+                <div class="menu-item" onclick="pilihArea('Boiler')">
                     <div class="menu-item-left">
                         <div class="menu-icon">🔥</div>
                         <div class="menu-text">Operator Boiler</div>
                     </div>
                     <div class="menu-arrow">❯</div>
                 </div>
-                <div class="menu-item" onclick="bukaFormCommon('right')">
+                <div class="menu-item" onclick="pilihArea('Common')">
                     <div class="menu-item-left">
                         <div class="menu-icon">🔧</div>
                         <div class="menu-text">Operator Common</div>
@@ -357,223 +388,35 @@
             </div>
         </div>
 
-        <div id="page-pilih-unit-turbin" class="page">
+        <div id="page-pilih-tipe" class="page">
             <div class="header-bar">
                 <button class="btn-back-icon" onclick="changePage('page-pilih-parameter', 'left')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </button>
-                <h2 class="form-title">Lokal Turbin</h2>
+                <h2 class="form-title">Tipe Logsheet</h2>
             </div>
             
-            <div class="center-form-wrapper">
-                <div class="unit-card-container">
-                    <div class="unit-card-item" onclick="bukaFormTurbin('Unit 1', 'right')">
-                        <div class="unit-card-text">Unit 1</div>
+            <div class="menu-list">
+                <div class="menu-item" onclick="bukaLinkLogsheet('CCR')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🖥️</div>
+                        <div class="menu-text">Logsheet Operator CCR</div>
                     </div>
-                    <div class="unit-card-item" onclick="bukaFormTurbin('Unit 2', 'right')">
-                        <div class="unit-card-text">Unit 2</div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                <div class="menu-item" onclick="bukaLinkLogsheet('Lokal')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🚶</div>
+                        <div class="menu-text">Logsheet Operator Lokal</div>
                     </div>
+                    <div class="menu-arrow">❯</div>
                 </div>
             </div>
-        </div>
-
-        <div id="page-pilih-unit-boiler" class="page">
-            <div class="header-bar">
-                <button class="btn-back-icon" onclick="changePage('page-pilih-parameter', 'left')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </button>
-                <h2 class="form-title">Lokal Boiler</h2>
-            </div>
-            
-            <div class="center-form-wrapper">
-                <div class="unit-card-container">
-                    <div class="unit-card-item" onclick="bukaFormBoiler('Unit 1', 'right')">
-                        <div class="unit-card-text">Unit 1</div>
-                    </div>
-                    <div class="unit-card-item" onclick="bukaFormBoiler('Unit 2', 'right')">
-                        <div class="unit-card-text">Unit 2</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="page-form-turbin" class="page">
-            <div class="header-bar">
-                <button class="btn-back-icon" onclick="changePage('page-pilih-unit-turbin', 'left')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </button>
-                <h2 class="form-title" id="judul-turbin">Turbin</h2>
-            </div>
-            
-            <div class="ios-card">
-                <h3 class="equipment-title">Identitas Laporan</h3>
-                <label>Tanggal</label>
-                <input type="date" id="turbin-tgl" required>
-                
-                <label>Nama Operator</label>
-                <select id="turbin-nama">
-                    <option value="">- Pilih Operator -</option>
-                    <option value="Agus">Agus</option>
-                    <option value="Huda">Huda</option>
-                    <option value="Uji">Uji</option>
-                    <option value="Evan">Evan</option>
-                    <option value="Gusti">Gusti</option>
-                    <option value="Teguh">Teguh</option>
-                    <option value="David">David</option>
-                    <option value="Barep">Barep</option>
-                </select>
-
-                <label>Regu</label>
-                <select id="turbin-regu">
-                    <option value="">- Pilih Regu -</option>
-                    <option value="A">Regu A</option>
-                    <option value="B">Regu B</option>
-                    <option value="C">Regu C</option>
-                    <option value="D">Regu D</option>
-                </select>
-                
-                <label>Jam Log Sheet</label>
-                <select id="turbin-jam">
-                    <option value="">- Pilih Jam -</option>
-                    <option value="00:00">00:00</option>
-                    <option value="02:00">02:00</option>
-                    <option value="04:00">04:00</option>
-                    <option value="06:00">06:00</option>
-                    <option value="08:00">08:00</option>
-                    <option value="10:00">10:00</option>
-                    <option value="12:00">12:00</option>
-                    <option value="14:00">14:00</option>
-                    <option value="16:00">16:00</option>
-                    <option value="18:00">18:00</option>
-                    <option value="20:00">20:00</option>
-                    <option value="22:00">22:00</option>
-                </select>
-            </div>
-
-            <div id="container-turbin"></div>
-
-            <button class="btn-kirim" style="margin-top: 15px;" onclick="kirimDataTurbin()">Kirim Data Parameter</button>
-        </div>
-
-        <div id="page-form-boiler" class="page">
-            <div class="header-bar">
-                <button class="btn-back-icon" onclick="changePage('page-pilih-unit-boiler', 'left')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </button>
-                <h2 class="form-title" id="judul-boiler">Boiler</h2>
-            </div>
-            
-            <div class="ios-card">
-                <h3 class="equipment-title">Identitas Laporan</h3>
-                <label>Tanggal</label>
-                <input type="date" id="boiler-tgl" required>
-                
-                <label>Nama Operator</label>
-                <select id="boiler-nama">
-                    <option value="">- Pilih Operator -</option>
-                    <option value="Harman">Harman</option>
-                    <option value="Yusuf">Yusuf</option>
-                    <option value="Egar">Egar</option>
-                    <option value="Gandha">Gandha</option>
-                    <option value="Ferdi">Ferdi</option>
-                    <option value="Meyer">Meyer</option>
-                    <option value="Aris">Aris</option>
-                    <option value="Deo">Deo</option>
-                </select>
-
-                <label>Regu</label>
-                <select id="boiler-regu">
-                    <option value="">- Pilih Regu -</option>
-                    <option value="A">Regu A</option>
-                    <option value="B">Regu B</option>
-                    <option value="C">Regu C</option>
-                    <option value="D">Regu D</option>
-                </select>
-                
-                <label>Jam Log Sheet</label>
-                <select id="boiler-jam">
-                    <option value="">- Pilih Jam -</option>
-                    <option value="00:00">00:00</option>
-                    <option value="02:00">02:00</option>
-                    <option value="04:00">04:00</option>
-                    <option value="06:00">06:00</option>
-                    <option value="08:00">08:00</option>
-                    <option value="10:00">10:00</option>
-                    <option value="12:00">12:00</option>
-                    <option value="14:00">14:00</option>
-                    <option value="16:00">16:00</option>
-                    <option value="18:00">18:00</option>
-                    <option value="20:00">20:00</option>
-                    <option value="22:00">22:00</option>
-                </select>
-            </div>
-
-            <div id="container-boiler"></div>
-
-            <button class="btn-kirim" style="margin-top: 15px;" onclick="kirimDataBoiler()">Kirim Data Parameter</button>
-        </div>
-
-        <div id="page-form-common" class="page">
-            <div class="header-bar">
-                <button class="btn-back-icon" onclick="changePage('page-pilih-parameter', 'left')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </button>
-                <h2 class="form-title">Lokal Common</h2>
-            </div>
-            
-            <div class="ios-card">
-                <h3 class="equipment-title">Identitas Laporan</h3>
-                <label>Tanggal</label>
-                <input type="date" id="common-tgl" required>
-                
-                <label>Nama Operator</label>
-                <select id="common-nama">
-                    <option value="">- Pilih Operator -</option>
-                    <option value="Haidir">Haidir</option>
-                    <option value="Lutfi">Lutfi</option>
-                    <option value="Adi">Adi</option>
-                    <option value="Sultan">Sultan</option>
-                    <option value="Jimmy">Jimmy</option>
-                    <option value="Sambodo">Sambodo</option>
-                    <option value="Kiel">Kiel</option>
-                    <option value="Rizki">Rizki</option>
-                </select>
-
-                <label>Regu</label>
-                <select id="common-regu">
-                    <option value="">- Pilih Regu -</option>
-                    <option value="A">Regu A</option>
-                    <option value="B">Regu B</option>
-                    <option value="C">Regu C</option>
-                    <option value="D">Regu D</option>
-                </select>
-                
-                <label>Jam Log Sheet</label>
-                <select id="common-jam">
-                    <option value="">- Pilih Jam -</option>
-                    <option value="00:00">00:00</option>
-                    <option value="02:00">02:00</option>
-                    <option value="04:00">04:00</option>
-                    <option value="06:00">06:00</option>
-                    <option value="08:00">08:00</option>
-                    <option value="10:00">10:00</option>
-                    <option value="12:00">12:00</option>
-                    <option value="14:00">14:00</option>
-                    <option value="16:00">16:00</option>
-                    <option value="18:00">18:00</option>
-                    <option value="20:00">20:00</option>
-                    <option value="22:00">22:00</option>
-                </select>
-            </div>
-
-            <div id="container-common"></div>
-
-            <button class="btn-kirim" style="margin-top: 15px;" onclick="kirimDataCommon()">Kirim Data Parameter</button>
         </div>
 
         <div id="page-login" class="page">
             <div class="header-bar">
-                <button class="btn-back-icon" onclick="changePage('page-pilih-logsheet', 'left')">
+                <button class="btn-back-icon" onclick="changePage('page-dashboard', 'left')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </button>
                 <h2 class="form-title">Selfie Posisi</h2>
@@ -643,7 +486,7 @@
 
         <div id="page-flm" class="page">
             <div class="header-bar">
-                <h2 class="form-title">Laporan FLM & 5S</h2>
+                <h2 class="form-title" style="padding:0;">Laporan FLM & 5S</h2>
             </div>
             
             <div class="ios-card" style="margin-bottom: 15px;">
@@ -661,7 +504,7 @@
 
         <div id="page-temuan" class="page">
             <div class="header-bar">
-                <h2 class="form-title">Laporan Temuan</h2>
+                <h2 class="form-title" style="padding:0;">Laporan Temuan</h2>
             </div>
             
             <div class="ios-card">
@@ -709,69 +552,28 @@
         const GAS_URL = "https://script.google.com/macros/s/AKfycbxlGGifwVgGluN9d2zYq1aoXcn4SM0eMu1q8zO47h9DPYDphrsyxXHV8VCOzD1J98QQwg/exec";
         const flashToggle = document.getElementById('flash-toggle');
         let base64TemuanFinal = ""; 
-        let activeUnitName = "";
+
+        // --- VARIABEL UNTUK ALUR TIPE CCR / LOKAL ---
+        let selectedArea = "";
+        
+        // ===== TEMPELKAN LINK LOGSHEET KAMU DI SINI =====
+        const linkLogsheet = {
+            "Turbin": {
+                "CCR": "https://docs.google.com/spreadsheets/d/1HwkOkaYepyTGd0qgtSzrJYEwWOY-R2Y2acPw7XdGsYA/edit?gid=1332735050#gid=1332735050",
+                "Lokal": "https://docs.google.com/spreadsheets/d/1q0eV0leiRj0DDLOQIs9RuNAQxzaeQha-BAZOQmgJeLU/edit?gid=1087681970#gid=1087681970"
+            },
+            "Boiler": {
+                "CCR": "https://docs.google.com/spreadsheets/d/1kmD0dq9ZQq_hxHKgrFtMTQO8PALTNqHoNpJLYE8fWJg/edit?gid=1307455656#gid=1307455656",
+                "Lokal": "https://docs.google.com/spreadsheets/d/1hvCTCAcpjND19CvQUlqIJHQ2-ERlv3reCijYw0uAFw8/edit?gid=93884117#gid=93884117"
+            },
+            "Common": {
+                "CCR": "https://docs.google.com/spreadsheets/d/1Q_SRfYTgwVHx1nWJegqD8BkNjD-fMWYA3tRqjv-5dMk/edit?gid=1831099537#gid=1831099537",
+                "Lokal": "https://docs.google.com/spreadsheets/d/11wiYPyZHs0q7_GkHNlFy3lULTTdnbZZcJoIBoSB34SE/edit?gid=1473990470#gid=1473990470"
+            }
+        };
+        // ================================================
 
         const trashSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
-
-        /* --- DATA PARAMETER DINAMIS DIOPTIMALKAN --- */
-        const paramBfp = [ { id: "temp_motor", label: "TEMPERATURE MOTOR (°C)", type: "number" }, { id: "temp_pompa", label: "TEMPERATURE POMPA (°C)", type: "number" }, { id: "temp_mot_oil", label: "TEMPERATURE MOTOR OIL STATION (°C)", type: "number" }, { id: "temp_oil", label: "TEMPERATURE OIL STATION (°C)", type: "number" }, { id: "level_oil", label: "LEVEL OIL STATION (%)", type: "number" }, { id: "press_inlet", label: "PRESSURE INLET (Kg/cm2)", type: "number" }, { id: "bal_press", label: "BALANCING PRESSURE (Kg/cm2)", type: "number" }, { id: "press_outlet", label: "PRESSURE OUTLET (Kg/cm2)", type: "number" } ];
-        const paramVfd = [ { id: "temp_a", label: "TEMPERATURE PHASA A (°C)", type: "number" }, { id: "temp_b", label: "TEMPERATURE PHASA B (°C)", type: "number" }, { id: "temp_c", label: "TEMPERATURE PHASA C (°C)", type: "number" }, { id: "ef1", label: "EXHAUST FAN 1 (RUNNING/NOT)", type: "select", options: ["RUNNING", "NOT"] }, { id: "ef2", label: "EXHAUST FAN 2 (RUNNING/NOT)", type: "select", options: ["RUNNING", "NOT"] }, { id: "ef3", label: "EXHAUST FAN 3 (RUNNING/NOT)", type: "select", options: ["RUNNING", "NOT"] }, { id: "ef4", label: "EXHAUST FAN 4 (RUNNING/NOT)", type: "select", options: ["RUNNING", "NOT"] } ];
-        const paramCep = [ { id: "temp_motor", label: "TEMPERATURE MOTOR (°C)", type: "number" }, { id: "level_oli", label: "LEVEL OLI (%)", type: "number" } ];
-        const paramVac = [ { id: "temp_motor", label: "TEMPERATURE MOTOR (°C)", type: "number" }, { id: "pelumasan", label: "PELUMASAN (Ok/Not)", type: "select", options: ["Ok", "Not"] } ];
-        const paramTrafo = [ { id: "winding_temp", label: "WINDING TEMPERATURE (°C)", type: "number" }, { id: "oil_temp", label: "OIL TEMPERATURE (°C)", type: "number" }, { id: "oil_level", label: "OIL LEVEL KONSERVATOR", type: "number" }, { id: "silica", label: "SILICA GEL", type: "select", options: ["Ungu", "Biru", "Putih", "Pink"] } ];
-        const paramCwp = [ { id: "vibrasi", label: "VIBRASI", type: "number" }, { id: "level_oli", label: "LEVEL OLI (%)", type: "number" }, { id: "sealing", label: "SEALING (Ok/Not)", type: "select", options: ["Ok", "Not"] } ];
-        
-        const dataEquipmentTurbin = [
-            { nama_base: "BOILER FEED PUMP {U}A", prefix: "bfpa", parameter: paramBfp },
-            { nama_base: "BOILER FEED PUMP {U}B", prefix: "bfpb", parameter: paramBfp },
-            { nama_base: "PANEL VFD BFP {U}A", prefix: "vfda", parameter: paramVfd },
-            { nama_base: "PANEL VFD BFP {U}B", prefix: "vfdb", parameter: paramVfd },
-            { nama_base: "CONDENSATE EXTRACTION PUMP {U}A", prefix: "cepa", parameter: paramCep },
-            { nama_base: "CONDENSATE EXTRACTION PUMP {U}B", prefix: "cepb", parameter: paramCep },
-            { nama_base: "VACUM PUMP {U}A", prefix: "vaca", parameter: paramVac },
-            { nama_base: "VACUM PUMP {U}B", prefix: "vacb", parameter: paramVac },
-            { nama_base: "MAIN LUBE OIL", prefix: "mlo", parameter: [ { id: "press_filter", label: "PRESSURE FILTER MOT (Kg/cm2)", type: "number" }, { id: "temp_cooler_in", label: "TEMPERATURE COOLER INLET MOT (°C)", type: "number" }, { id: "temp_cooler_out", label: "TEMPERATURE COOLER OUTLET MOT (°C)", type: "number" }, { id: "level_tank", label: "LEVEL TANK MOT (mm)", type: "number" }, { id: "ac_lube_out", label: "AC LUBE OIL OUTLET PRESSURE (Kg/cm2)", type: "number" }, { id: "oil_pipe_press", label: "OIL PIPE PRESSURE (Kg/Cm2)", type: "number" }, { id: "ef", label: "EXHAUST FAN (Ok/Not)", type: "select", options: ["Ok", "Not"] } ] },
-            { nama_base: "EH OIL", prefix: "eho", parameter: [ { id: "press_pompa", label: "PRESSURE POMPA (Kg/Cm2)", type: "number" }, { id: "level_tank", label: "LEVEL TANK (mm)", type: "number" }, { id: "diff_press", label: "DIFFERENTIAL PRESSURE (Kg/Cm2)", type: "number" } ] },
-            { nama_base: "GLAND STEAM", prefix: "gs", parameter: [ { id: "level_gs", label: "LEVEL GLAND STEAM (mm)", type: "number" }, { id: "motor_ef", label: "MOTOR EXHAUST FAN (°C)", type: "number" } ] },
-            { nama_base: "GENERATOR #{U}", prefix: "gen", parameter: [ { id: "filter_in", label: "FILTER AIR COOLER INLET (Ok/Not)", type: "select", options: ["Ok", "Not"] }, { id: "filter_out", label: "FILTER AIR COOLER OUTLET (Ok/Not)", type: "select", options: ["Ok", "Not"] }, { id: "cb_plus", label: "CARBON BRUSH SISI + ( >30% )", type: "select", options: ["Ok", "Not"] }, { id: "cb_min", label: "CARBON BRUSH SISI - ( >30% )", type: "select", options: ["Ok", "Not"] }, { id: "ex_room", label: "EXCITATION ROOM (Ok/Not)", type: "select", options: ["Ok", "Not"] } ] },
-            { nama_base: "GSUT #{U}", prefix: "gsut", parameter: [...paramTrafo, { id: "pcf1", label: "PRIMARY COOLER FAN 1 (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "pcf2", label: "PRIMARY COOLER FAN 2 (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "pcf3", label: "PRIMARY COOLER FAN 3 (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "scf1", label: "SECONDARY COOLER FAN 1 (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "scf2", label: "SECONDARY COOLER FAN 2 (Run/Stop)", type: "select", options: ["Run", "Stop"] }] },
-            { nama_base: "UAT #{U}", prefix: "uat", parameter: [...paramTrafo, { id: "pf", label: "PRIMARY FAN (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "sf", label: "SECONDARY FAN (Run/Stop)", type: "select", options: ["Run", "Stop"] }] },
-            { nama_base: "CIRCULATING WATER PUMP 1", prefix: "cwp1", parameter: paramCwp },
-            { nama_base: "CIRCULATING WATER PUMP COMMON", prefix: "cwp_com", parameter: paramCwp },
-            { nama_base: "CIRCULATING WATER PUMP 2", prefix: "cwp2", parameter: paramCwp }
-        ];
-
-        const paramCf = [ { id: "flow", label: "FLOW (T/H)", type: "number" }, { id: "total_counter", label: "TOTAL COUNTER (Ton)", type: "number" }, { id: "temp_motor", label: "TEMPERATURE MOTOR (°C)", type: "number" }, { id: "temp_lower", label: "TEMPERATURE LOWER (°C)", type: "number" } ];
-        const paramFan = [ { id: "temp_motor", label: "TEMPERATURE MOTOR (°C)", type: "number" }, { id: "temp_fan", label: "TEMPERATURE FAN (°C)", type: "number" }, { id: "level_oli", label: "LEVEL OLI (%)", type: "number" } ];
-        
-        const dataEquipmentBoiler = [
-            { nama_base: "COAL FEEDER {U}A", prefix: "cfa", parameter: paramCf }, { nama_base: "COAL FEEDER {U}B", prefix: "cfb", parameter: paramCf }, { nama_base: "COAL FEEDER {U}C", prefix: "cfc", parameter: paramCf }, { nama_base: "COAL FEEDER {U}D", prefix: "cfd", parameter: paramCf },
-            { nama_base: "PRIMARY AIR FAN {U}A", prefix: "pafa", parameter: paramFan }, { nama_base: "PRIMARY AIR FAN {U}B", prefix: "pafb", parameter: paramFan },
-            { nama_base: "SECONDARY AIR FAN {U}A", prefix: "safa", parameter: paramFan }, { nama_base: "SECONDARY AIR FAN {U}B", prefix: "safb", parameter: paramFan },
-            { nama_base: "INDUCED DRAF FAN {U}A", prefix: "idfa", parameter: paramFan }, { nama_base: "INDUCED DRAF FAN {U}B", prefix: "idfb", parameter: paramFan },
-            { nama_base: "HIGH PRESSURE FLUIDIZE FAN {U}A", prefix: "hpffa", parameter: [ { id: "outlet_press", label: "OUTLET PRESSURE (Kg/Cm2)", type: "number" }, { id: "temp_inlet", label: "TEMPERATURE INLET (°C)", type: "number" } ] },
-            { nama_base: "HIGH PRESSURE FLUIDIZE FAN {U}B", prefix: "hpffb", parameter: [ { id: "outlet_press", label: "OUTLET PRESSURE (Kg/Cm2)", type: "number" }, { id: "temp_inlet", label: "TEMPERATURE INLET (°C)", type: "number" } ] },
-            { nama_base: "IGNITOR UNIT {U}", prefix: "ignitor", parameter: [ { id: "right", label: "RIGHT (Ok/Not)", type: "select", options: ["Ok", "Not"] }, { id: "left", label: "LEFT (Ok/Not)", type: "select", options: ["Ok", "Not"] } ] }
-        ];
-
-        const paramCccwp = [ { id: "temp_mot", label: "MOTOR TEMPERATURE (°C)", type: "number" }, { id: "temp_pompa", label: "TEMPERATURE POMPA (°C)", type: "number" }, { id: "lube", label: "LUBRICATING (Ok/Not)", type: "select", options: ["Ok", "Not"] } ];
-        const paramTrafoEsp = [ { id: "level_oli", label: "LEVEL OLI (%)", type: "number" }, { id: "silica", label: "SILICA GEL (biru/ungu/putih/pink)", type: "select", options: ["Biru", "Ungu", "Putih", "Pink"] }, { id: "temp_trafo", label: "TEMPERATURE TRAFO (°C)", type: "number" } ];
-        const paramRapping = [ { id: "mot1", label: "TEMPERATURE MOTOR 1 (°C)", type: "number" }, { id: "mot2", label: "TEMPERATURE MOTOR 2 (°C)", type: "number" }, { id: "mot3", label: "TEMPERATURE MOTOR 3 (°C)", type: "number" }, { id: "mot4", label: "TEMPERATURE MOTOR 4 (°C)", type: "number" } ];
-        const paramConveying = [ { id: "row1", label: "ROW 1 (HANGAT/DINGIN)", type: "select", options: ["HANGAT", "DINGIN"] }, { id: "row2", label: "ROW 2 (HANGAT/DINGIN)", type: "select", options: ["HANGAT", "DINGIN"] }, { id: "row3", label: "ROW 3 (HANGAT/DINGIN)", type: "select", options: ["HANGAT", "DINGIN"] }, { id: "row4", label: "ROW 4 (HANGAT/DINGIN)", type: "select", options: ["HANGAT", "DINGIN"] }, { id: "elbow", label: "ELBOW (HANGAT/DINGIN)", type: "select", options: ["HANGAT", "DINGIN"] } ];
-
-        const dataEquipmentCommon = [
-            { nama_base: "CCCWP A", prefix: "cccwpa", parameter: paramCccwp }, { nama_base: "CCCWP B", prefix: "cccwpb", parameter: paramCccwp }, { nama_base: "CCCWP C", prefix: "cccwpc", parameter: paramCccwp },
-            { nama_base: "OCCWP A", prefix: "occwpa", parameter: paramCccwp }, { nama_base: "OCCWP B", prefix: "occwpb", parameter: paramCccwp }, { nama_base: "OCCWP C", prefix: "occwpc", parameter: paramCccwp },
-            { nama_base: "HEAT EXCHANGER", prefix: "he", parameter: [ { id: "a", label: "A (Ok/Not)", type: "select", options: ["Ok", "Not"] }, { id: "b", label: "B (Ok/Not)", type: "select", options: ["Ok", "Not"] }, { id: "c", label: "C (Ok/Not)", type: "select", options: ["Ok", "Not"] } ] },
-            { nama_base: "DIFFERENTIAL PRESSURE CCCW PUMP", prefix: "dp_cccwp", parameter: [ { id: "a", label: "A (Kg/cm2)", type: "number" }, { id: "b", label: "B (Kg/cm2)", type: "number" }, { id: "c", label: "C (Kg/cm2)", type: "number" } ] },
-            { nama_base: "TRAFO ESP 1", prefix: "tesp1", parameter: paramTrafoEsp }, { nama_base: "RAPPING ESP 1", prefix: "resp1", parameter: paramRapping },
-            { nama_base: "TRAFO ESP 2", prefix: "tesp2", parameter: paramTrafoEsp }, { nama_base: "RAPPING ESP 2", prefix: "resp2", parameter: paramRapping },
-            { nama_base: "TRAFO ESP 3", prefix: "tesp3", parameter: paramTrafoEsp }, { nama_base: "RAPPING ESP 3", prefix: "resp3", parameter: paramRapping },
-            { nama_base: "LINE CONVEYING ESP 1", prefix: "lcesp1", parameter: paramConveying }, { nama_base: "LINE CONVEYING ESP 2", prefix: "lcesp2", parameter: paramConveying }, { nama_base: "LINE CONVEYING ESP 3", prefix: "lcesp3", parameter: paramConveying },
-            { nama_base: "SERVICE AIR COMPRESSOR", prefix: "sac", parameter: [ { id: "temp_mota", label: "TEMPERATURE MOTOR A (°C)", type: "number" }, { id: "temp_motb", label: "TEMPERATURE MOTOR B (°C)", type: "number" }, { id: "temp_motc", label: "TEMPERATURE MOTOR C (°C)", type: "number" }, { id: "level_a", label: "LEVEL OIL PUMP A (%)", type: "number" }, { id: "level_b", label: "LEVEL OIL PUMP B (%)", type: "number" }, { id: "level_c", label: "LEVEL OIL PUMP C (%)", type: "number" }, { id: "dryer_a", label: "DRYER A (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "dryer_b", label: "DRYER B (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "dryer_c", label: "DRYER C (Run/Stop)", type: "select", options: ["Run", "Stop"] }, { id: "press_out", label: "PRESSURE OUTLET (Kg/Cm2)", type: "number" } ] },
-            { nama_base: "INSTRUMENT AIR COMPRESSOR", prefix: "iac", parameter: [ { id: "temp_mota", label: "TEMPERATURE MOTOR A", type: "number" }, { id: "temp_motb", label: "TEMPERATURE MOTOR B", type: "number" }, { id: "temp_motc", label: "TEMPERATURE MOTOR C", type: "number" }, { id: "dryer_a", label: "DRYER A (Run/ Stop)", type: "select", options: ["Run", "Stop"] }, { id: "dryer_b", label: "DRYER B (Run/ Stop)", type: "select", options: ["Run", "Stop"] }, { id: "dryer_c", label: "DRYER C (Run/ Stop)", type: "select", options: ["Run", "Stop"] }, { id: "press_out", label: "PRESSURE OUTLET (Kg/cm2)", type: "number" } ] },
-            { nama_base: "VESSEL/TANGKI", prefix: "vessel", parameter: [ { id: "sa_header", label: "SERVICE AIR HEADER (Kg/cm2)", type: "number" }, { id: "ia_header", label: "INSTRUMENT AIR HEADER (Kg/cm2)", type: "number" } ] }
-        ];
 
         const dataOperator = {
             "Turbin": ["Agus", "Huda", "Uji", "Evan", "Gusti", "Teguh", "David", "Barep"],
@@ -833,7 +635,7 @@
             let activeIndex = -1;
             
             if (pageId === 'page-dashboard') activeIndex = 0;
-            else if (pageId.includes('logsheet') || pageId.includes('turbin') || pageId.includes('boiler') || pageId.includes('common') || pageId.includes('login') || pageId.includes('form') || pageId.includes('kamera')) activeIndex = 1;
+            else if (pageId.includes('logsheet') || pageId.includes('login') || pageId.includes('form') || pageId.includes('kamera') || pageId.includes('parameter') || pageId.includes('tipe')) activeIndex = 1;
             else if (pageId === 'page-flm') activeIndex = 2;
             else if (pageId === 'page-temuan') activeIndex = 3;
 
@@ -851,11 +653,11 @@
             }
         }
 
-        /* Fungsi Untuk Handle Klik Navigasi Bawah (Menyesuaikan Arah Slide) */
+        /* Fungsi Untuk Handle Klik Navigasi Bawah */
         function handleNavClick(pageId, targetIndex) {
             let direction = 'right';
             if (targetIndex < currentNavIndex) direction = 'left';
-            else if (targetIndex === currentNavIndex) return; // Jika klik yg sama, abaikan
+            else if (targetIndex === currentNavIndex) return; 
             
             currentNavIndex = targetIndex;
             changePage(pageId, direction);
@@ -875,201 +677,20 @@
             updateBottomNav(pageId);
         }
 
-        function bukaFormTurbin(unit, direction = 'right') {
-            activeUnitName = unit;
-            const nomorUnit = unit === "Unit 1" ? "1" : "2";
-            document.getElementById("judul-turbin").innerText = "Turbin " + unit;
-            const container = document.getElementById("container-turbin");
-            container.innerHTML = ""; 
+        /* --- LOGIKA BARU UNTUK PILIH AREA DAN BUKA LINK --- */
+        function pilihArea(area) {
+            selectedArea = area;
+            changePage('page-pilih-tipe', 'right');
+        }
+
+        function bukaLinkLogsheet(tipe) {
+            const urlTarget = linkLogsheet[selectedArea][tipe];
             
-            dataEquipmentTurbin.forEach(eq => {
-                const namaEquipment = eq.nama_base.replace(/{U}/g, nomorUnit);
-                const card = document.createElement("div");
-                card.className = "ios-card";
-                
-                const h3 = document.createElement("h3");
-                h3.className = "equipment-title";
-                h3.innerText = namaEquipment;
-                card.appendChild(h3);
-                
-                eq.parameter.forEach(param => {
-                    const label = document.createElement("label");
-                    label.innerText = param.label;
-                    card.appendChild(label);
-                    const elementId = `param_turbin_${eq.prefix}_${nomorUnit}_${param.id}`;
-                    
-                    if (param.type === "number") {
-                        const input = document.createElement("input");
-                        input.type = "number"; input.id = elementId; input.placeholder = "0.0"; input.step = "0.1";
-                        card.appendChild(input);
-                    } else if (param.type === "select") {
-                        const select = document.createElement("select");
-                        select.id = elementId;
-                        const optDefault = document.createElement("option");
-                        optDefault.value = ""; optDefault.innerText = "- Pilih -"; select.appendChild(optDefault);
-                        param.options.forEach(optVal => {
-                            const opt = document.createElement("option"); opt.value = optVal; opt.innerText = optVal; select.appendChild(opt);
-                        });
-                        card.appendChild(select);
-                    }
-                });
-                container.appendChild(card);
-            });
-            changePage('page-form-turbin', direction);
-        }
-
-        function bukaFormBoiler(unit, direction = 'right') {
-            activeUnitName = unit;
-            const nomorUnit = unit === "Unit 1" ? "1" : "2";
-            document.getElementById("judul-boiler").innerText = "Boiler " + unit;
-            const container = document.getElementById("container-boiler");
-            container.innerHTML = ""; 
-            
-            dataEquipmentBoiler.forEach(eq => {
-                const namaEquipment = eq.nama_base.replace(/{U}/g, nomorUnit);
-                const card = document.createElement("div");
-                card.className = "ios-card";
-                
-                const h3 = document.createElement("h3");
-                h3.className = "equipment-title";
-                h3.innerText = namaEquipment;
-                card.appendChild(h3);
-                
-                eq.parameter.forEach(param => {
-                    const label = document.createElement("label");
-                    label.innerText = param.label;
-                    card.appendChild(label);
-                    const elementId = `param_boiler_${eq.prefix}_${nomorUnit}_${param.id}`;
-                    
-                    if (param.type === "number") {
-                        const input = document.createElement("input");
-                        input.type = "number"; input.id = elementId; input.placeholder = "0.0"; input.step = "0.1";
-                        card.appendChild(input);
-                    } else if (param.type === "select") {
-                        const select = document.createElement("select");
-                        select.id = elementId;
-                        const optDefault = document.createElement("option");
-                        optDefault.value = ""; optDefault.innerText = "- Pilih -"; select.appendChild(optDefault);
-                        param.options.forEach(optVal => {
-                            const opt = document.createElement("option"); opt.value = optVal; opt.innerText = optVal; select.appendChild(opt);
-                        });
-                        card.appendChild(select);
-                    }
-                });
-                container.appendChild(card);
-            });
-            changePage('page-form-boiler', direction);
-        }
-
-        function bukaFormCommon(direction = 'right') {
-            activeUnitName = "Common Area";
-            const container = document.getElementById("container-common");
-            container.innerHTML = ""; 
-            
-            dataEquipmentCommon.forEach(eq => {
-                const card = document.createElement("div");
-                card.className = "ios-card";
-                
-                const h3 = document.createElement("h3");
-                h3.className = "equipment-title";
-                h3.innerText = eq.nama_base;
-                card.appendChild(h3);
-                
-                eq.parameter.forEach(param => {
-                    const label = document.createElement("label");
-                    label.innerText = param.label;
-                    card.appendChild(label);
-                    const elementId = `param_common_${eq.prefix}_${param.id}`;
-                    
-                    if (param.type === "number") {
-                        const input = document.createElement("input");
-                        input.type = "number"; input.id = elementId; input.placeholder = "0.0"; input.step = "0.1";
-                        card.appendChild(input);
-                    } else if (param.type === "select") {
-                        const select = document.createElement("select");
-                        select.id = elementId;
-                        const optDefault = document.createElement("option");
-                        optDefault.value = ""; optDefault.innerText = "- Pilih -"; select.appendChild(optDefault);
-                        param.options.forEach(optVal => {
-                            const opt = document.createElement("option"); opt.value = optVal; opt.innerText = optVal; select.appendChild(opt);
-                        });
-                        card.appendChild(select);
-                    }
-                });
-                container.appendChild(card);
-            });
-            changePage('page-form-common', direction);
-        }
-
-        async function kirimDataTurbin() {
-            const tanggal = document.getElementById('turbin-tgl').value;
-            const jam = document.getElementById('turbin-jam').value;
-            const nama = document.getElementById('turbin-nama').value;
-            const regu = document.getElementById('turbin-regu').value;
-            if (!tanggal || !jam || !nama || !regu) { tampilkanAlert("Harap lengkapi Tanggal, Nama, Regu, dan Jam Log Sheet."); return; }
-            const nomorUnit = activeUnitName === "Unit 1" ? "1" : "2";
-            const dataPeralatan = {};
-            dataEquipmentTurbin.forEach(eq => {
-                eq.parameter.forEach(param => {
-                    const elementId = `param_turbin_${eq.prefix}_${nomorUnit}_${param.id}`;
-                    const element = document.getElementById(elementId);
-                    if (element) dataPeralatan[elementId] = element.value;
-                });
-            });
-            document.getElementById('loading-overlay').classList.add('show');
-            try {
-                await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipe_laporan: "parameter_turbin", unit: activeUnitName, tanggal: tanggal, jam: jam, nama: nama, regu: regu, data_mesin: dataPeralatan }) });
-                document.getElementById('loading-overlay').classList.remove('show');
-                tampilkanAlert("Log Sheet Turbin " + activeUnitName + " berhasil dikirim!");
-                changePage('page-dashboard', 'left');
-            } catch (error) { document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Gagal mengirim parameter."); }
-        }
-
-        async function kirimDataBoiler() {
-            const tanggal = document.getElementById('boiler-tgl').value;
-            const jam = document.getElementById('boiler-jam').value;
-            const nama = document.getElementById('boiler-nama').value;
-            const regu = document.getElementById('boiler-regu').value;
-            if (!tanggal || !jam || !nama || !regu) { tampilkanAlert("Harap lengkapi Tanggal, Nama, Regu, dan Jam Log Sheet."); return; }
-            const nomorUnit = activeUnitName === "Unit 1" ? "1" : "2";
-            const dataPeralatan = {};
-            dataEquipmentBoiler.forEach(eq => {
-                eq.parameter.forEach(param => {
-                    const elementId = `param_boiler_${eq.prefix}_${nomorUnit}_${param.id}`;
-                    const element = document.getElementById(elementId);
-                    if (element) dataPeralatan[elementId] = element.value;
-                });
-            });
-            document.getElementById('loading-overlay').classList.add('show');
-            try {
-                await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipe_laporan: "parameter_boiler", unit: activeUnitName, tanggal: tanggal, jam: jam, nama: nama, regu: regu, data_mesin: dataPeralatan }) });
-                document.getElementById('loading-overlay').classList.remove('show');
-                tampilkanAlert("Log Sheet Boiler " + activeUnitName + " berhasil dikirim!");
-                changePage('page-dashboard', 'left');
-            } catch (error) { document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Gagal mengirim parameter Boiler."); }
-        }
-
-        async function kirimDataCommon() {
-            const tanggal = document.getElementById('common-tgl').value;
-            const jam = document.getElementById('common-jam').value;
-            const nama = document.getElementById('common-nama').value;
-            const regu = document.getElementById('common-regu').value;
-            if (!tanggal || !jam || !nama || !regu) { tampilkanAlert("Harap lengkapi Tanggal, Nama, Regu, dan Jam Log Sheet."); return; }
-            const dataPeralatan = {};
-            dataEquipmentCommon.forEach(eq => {
-                eq.parameter.forEach(param => {
-                    const elementId = `param_common_${eq.prefix}_${param.id}`;
-                    const element = document.getElementById(elementId);
-                    if (element) dataPeralatan[elementId] = element.value;
-                });
-            });
-            document.getElementById('loading-overlay').classList.add('show');
-            try {
-                await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipe_laporan: "parameter_common", unit: activeUnitName, tanggal: tanggal, jam: jam, nama: nama, regu: regu, data_mesin: dataPeralatan }) });
-                document.getElementById('loading-overlay').classList.remove('show');
-                tampilkanAlert("Log Sheet Lokal Common berhasil dikirim!");
-                changePage('page-dashboard', 'left');
-            } catch (error) { document.getElementById('loading-overlay').classList.remove('show'); tampilkanAlert("Gagal mengirim parameter Common."); }
+            if(urlTarget && !urlTarget.includes("kamu-disini")) {
+                window.open(urlTarget, '_blank');
+            } else {
+                tampilkanAlert(`Link logsheet untuk ${selectedArea} (${tipe}) belum diatur di dalam kode.`);
+            }
         }
 
         function mulaiFormSelfie() {
