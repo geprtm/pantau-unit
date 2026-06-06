@@ -97,7 +97,7 @@
         .btn-back-icon svg { width: 22px; height: 22px; }
         
         .form-title { 
-            margin: 0; 
+            margin: 0 auto; 
             font-size: 16px; 
             color: var(--accent); 
             font-weight: bold; 
@@ -109,14 +109,22 @@
             -webkit-backdrop-filter: blur(25px) saturate(200%);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 30px;
-            padding: 10px 24px;
+            
+            /* Menyesuaikan Tinggi Konstan & Lebar Dinamis */
+            height: 40px; 
+            width: fit-content; 
+            padding: 0 24px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             
             white-space: nowrap; 
             overflow: hidden; 
             text-overflow: ellipsis; 
             letter-spacing: -0.3px;
-            max-width: 65%;
+            max-width: 65%; /* Mencegah tabrakan dengan tombol back */
         }
         body.light-mode .form-title {
             background: rgba(255, 255, 255, 0.35); 
@@ -325,7 +333,7 @@
                     <div class="menu-arrow">❯</div>
                 </div>
             </div>
-            <p style="font-size: 11px; margin-top: 30px; opacity: 0.4; font-weight: 500;">v3.5 (Redirect Link & Selfie Update)</p>
+            <p style="font-size: 11px; margin-top: 30px; opacity: 0.4; font-weight: 500;">v3.9 (Logsheet Submenu Update)</p>
         </div>
 
         <div id="page-pilih-logsheet" class="page">
@@ -333,8 +341,54 @@
                 <button class="btn-back-icon" onclick="changePage('page-dashboard', 'left')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </button>
-                <!-- Judul diperbarui menjadi Pilih Form -->
                 <h2 class="form-title">Pilih Form</h2>
+            </div>
+            
+            <div class="menu-list">
+                
+                <!-- MENU LOGSHEET (Pintu masuk kumpulan semua logsheet) -->
+                <div class="menu-item" onclick="changePage('page-menu-logsheet', 'right')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">📑</div>
+                        <div class="menu-text">Menu Logsheet</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+
+                <hr style="margin: 5px 0; border: 0; border-top: 1px solid var(--border);">
+
+                <div class="menu-item" onclick="changePage('page-pilih-logbook', 'right')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">📓</div>
+                        <div class="menu-text">Logbook Operator</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                
+                <div class="menu-item" onclick="bukaLinkForm('Form Pengujian BSDG')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">⚡</div>
+                        <div class="menu-text">Form Pengujian BSDG</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                <div class="menu-item" onclick="bukaLinkForm('Form Run Test Peralatan')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🔄</div>
+                        <div class="menu-text">Form Run Test Peralatan</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HALAMAN BARU UNTUK KUMPULAN MENU LOGSHEET -->
+        <div id="page-menu-logsheet" class="page">
+            <div class="header-bar">
+                <button class="btn-back-icon" onclick="changePage('page-pilih-logsheet', 'left')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <h2 class="form-title">Daftar Logsheet</h2>
             </div>
             
             <div class="menu-list">
@@ -352,12 +406,102 @@
                     </div>
                     <div class="menu-arrow">❯</div>
                 </div>
+                <div class="menu-item" onclick="bukaLinkForm('Logsheet CABOP')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🗂️</div>
+                        <div class="menu-text">Logsheet CABOP</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                <div class="menu-item" onclick="bukaLinkForm('Log Sheet Soot Blower')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">💨</div>
+                        <div class="menu-text">Log Sheet Soot Blower</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                <div class="menu-item" onclick="bukaLinkForm('Log Sheet Biomass')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🌿</div>
+                        <div class="menu-text">Log Sheet Biomass</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HALAMAN UNTUK PILIH LOGBOOK -->
+        <div id="page-pilih-logbook" class="page">
+            <div class="header-bar">
+                <button class="btn-back-icon" onclick="changePage('page-pilih-logsheet', 'left')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <h2 class="form-title">Pilih Logbook</h2>
+            </div>
+            
+            <div class="menu-list">
+                <div class="menu-item" onclick="bukaLinkForm('Log Book Shift Meeting CCR')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">👥</div>
+                        <div class="menu-text">Log Book Shift Meeting CCR</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                <div class="menu-item" onclick="bukaLinkForm('Log Book CCR Turbin')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🖥️</div>
+                        <div class="menu-text">Log Book CCR Turbin</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                <div class="menu-item" onclick="bukaLinkForm('Log Book CCR Boiler')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🖥️</div>
+                        <div class="menu-text">Log Book CCR Boiler</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                <div class="menu-item" onclick="bukaLinkForm('Log Book CCR Common')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🖥️</div>
+                        <div class="menu-text">Log Book CCR Common</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                <div class="menu-item" onclick="bukaLinkForm('Log Book Lokal Turbin')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🚶</div>
+                        <div class="menu-text">Log Book Lokal Turbin</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                <div class="menu-item" onclick="bukaLinkForm('Log Book Lokal Boiler')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🚶</div>
+                        <div class="menu-text">Log Book Lokal Boiler</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                <div class="menu-item" onclick="bukaLinkForm('Log Book Lokal Common')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🚶</div>
+                        <div class="menu-text">Log Book Lokal Common</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
+                <div class="menu-item" onclick="bukaLinkForm('Log Book ALBES')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon">🚜</div>
+                        <div class="menu-text">Log Book ALBES</div>
+                    </div>
+                    <div class="menu-arrow">❯</div>
+                </div>
             </div>
         </div>
 
         <div id="page-pilih-parameter" class="page">
             <div class="header-bar">
-                <button class="btn-back-icon" onclick="changePage('page-pilih-logsheet', 'left')">
+                <button class="btn-back-icon" onclick="changePage('page-menu-logsheet', 'left')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </button>
                 <h2 class="form-title">Pilih Area</h2>
@@ -571,6 +715,28 @@
                 "Lokal": "https://docs.google.com/spreadsheets/d/11wiYPyZHs0q7_GkHNlFy3lULTTdnbZZcJoIBoSB34SE/edit?gid=1473990470#gid=1473990470"
             }
         };
+
+        // ===== LINK UNTUK OPSI FORM BARU & LOGBOOK =====
+        const linkFormLainnya = {
+            // -- Ekstra Logsheet
+            "Logsheet CABOP": "https://drive.google.com/drive/folders/1nnQNipCfU130LkX8zqlsxDothy98DrKG",
+            "Log Sheet Soot Blower": "https://docs.google.com/spreadsheets/d/1WZGqbaAM8s98rXujA3lIEIXXmUIMfhqgiK_f_e3UiuE/edit?gid=1495526235#gid=1495526235",
+            "Log Sheet Biomass": "", // Kosong, nanti bisa diisi
+            
+            // -- Logbook Operator
+            "Log Book Shift Meeting CCR": "https://docs.google.com/spreadsheets/d/1cTMHLJElicoRxM-_hsNEPAqI8CfIpUKptEH-Fl1ymkg/edit?gid=679046181#gid=679046181",
+            "Log Book CCR Turbin": "https://docs.google.com/spreadsheets/d/11YOHxcQjUqR3QFAEjfhDz1Q3mlfzAPrI3haBfMs8Jh0/edit?gid=1500957351#gid=1500957351",
+            "Log Book CCR Boiler": "https://docs.google.com/spreadsheets/d/11YOHxcQjUqR3QFAEjfhDz1Q3mlfzAPrI3haBfMs8Jh0/edit?gid=1500957351#gid=1500957351", // (Link sama dengan turbin dari prompt)
+            "Log Book CCR Common": "https://docs.google.com/spreadsheets/d/1_xDA45z8WBj_k0h--1N4ssdqaiYPJdMJQmkRopTl1K0/edit?gid=572140905#gid=572140905",
+            "Log Book Lokal Turbin": "https://docs.google.com/spreadsheets/d/1AugTsQ3JGj5f6aSqIPlIxyUB8-dqwDjhIpGgFhs0hgQ/edit?gid=262366497#gid=262366497",
+            "Log Book Lokal Boiler": "https://docs.google.com/spreadsheets/d/16vZHtB64U9SC6IUbaxODkjkJXecEyR95MKL9mCB25CU/edit?gid=1634980342#gid=1634980342",
+            "Log Book Lokal Common": "https://docs.google.com/spreadsheets/d/1cIr_cQ-Ya09HXSRWsvsYRCZBPrBjZMpHwgUwb8wKDTs/edit?gid=266576510#gid=266576510",
+            "Log Book ALBES": "", // Kosong, nanti bisa diisi
+
+            // -- Ekstra Form
+            "Form Pengujian BSDG": "https://link-pengujian-bsdg-disini.com",
+            "Form Run Test Peralatan": "https://link-run-test-peralatan-disini.com"
+        };
         // ================================================
 
         const trashSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
@@ -635,7 +801,7 @@
             let activeIndex = -1;
             
             if (pageId === 'page-dashboard') activeIndex = 0;
-            else if (pageId.includes('logsheet') || pageId.includes('login') || pageId.includes('form') || pageId.includes('kamera') || pageId.includes('parameter') || pageId.includes('tipe')) activeIndex = 1;
+            else if (pageId.includes('logsheet') || pageId.includes('logbook') || pageId.includes('login') || pageId.includes('form') || pageId.includes('kamera') || pageId.includes('parameter') || pageId.includes('tipe')) activeIndex = 1;
             else if (pageId === 'page-flm') activeIndex = 2;
             else if (pageId === 'page-temuan') activeIndex = 3;
 
@@ -690,6 +856,17 @@
                 window.open(urlTarget, '_blank');
             } else {
                 tampilkanAlert(`Link logsheet untuk ${selectedArea} (${tipe}) belum diatur di dalam kode.`);
+            }
+        }
+
+        /* --- FUNGSI BARU UNTUK BUKA LINK FORM / LOGBOOK LAINNYA --- */
+        function bukaLinkForm(namaForm) {
+            const urlTarget = linkFormLainnya[namaForm];
+            
+            if (urlTarget && urlTarget.trim() !== "" && !urlTarget.includes("disini.com")) {
+                window.open(urlTarget, '_blank');
+            } else {
+                tampilkanAlert(`Link untuk ${namaForm} belum diatur atau masih kosong.`);
             }
         }
 
