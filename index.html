@@ -21,16 +21,31 @@
             --input-bg: #FFFFFF; --input-text: #000000; --border: rgba(0,0,0,0.1);
         }
 
-        /* --- PENAMBAHAN EFEK ANIMASI SLIDE KANAN KIRI --- */
+        /* --- PENAMBAHAN EFEK ANIMASI --- */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideInRight { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes slideInLeft { from { transform: translateX(-40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        /* Animasi pop-up berurutan (Staggered) */
+        @keyframes itemPopUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
 
         body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 0 20px 20px 20px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; margin: 0; transition: background 0.3s, color 0.3s; animation: fadeIn 0.5s ease-out; overflow-x: hidden; }
         
         .container { width: 100%; max-width: 400px; text-align: center; position: relative; padding-bottom: 110px; box-sizing: border-box; min-height: 100vh; display: flex; flex-direction: column; }
 
-        #full-screen-flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 9999; transition: opacity 0.1s; }
+        /* --- BACKGROUND ILLUMINATOR UNTUK FLASH LAYAR --- */
+        #bg-illuminator {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #FFFFFF;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        #bg-illuminator.on { opacity: 1; }
 
         .switch-wrapper { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; padding: 0 5px; }
         .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
@@ -51,86 +66,43 @@
         .slider .sun { left: 6px; opacity: 1; transition: 0.4s; }
         .slider .moon { right: 5px; opacity: 1; transition: 0.4s; }
 
-        /* --- HOME HEADER TATA LETAK RAPI --- */
-        .main-header { position: relative; padding: 15px 0 5px 0; z-index: 100; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        /* --- HOME HEADER & SPLASH SCREEN EFFECT --- */
+        .main-header { 
+            position: relative; padding: 15px 0 5px 0; z-index: 100; width: 100%; display: flex; flex-direction: column; align-items: center; 
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), padding 0.8s ease; 
+        }
+        .main-header.splash-mode { transform: translateY(32vh) scale(1.3); padding-top: 0; }
+
+        #dashboard-menu { opacity: 0; transition: opacity 0.5s ease; }
+        #dashboard-menu.show-menu { opacity: 1; }
+        .version-text { font-size: 11px; margin-top: 30px; opacity: 0; font-weight: 500; transition: opacity 0.5s ease; }
+        .version-text.show-menu { opacity: 0.4; }
 
         /* --- HEADER OPSI --- */
         .header-bar { 
-            position: sticky; 
-            top: 15px; 
-            z-index: 100;
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            margin: 10px auto 25px auto; 
-            width: 100%; 
-            min-height: 44px; 
-            box-sizing: border-box;
+            position: sticky; top: 15px; z-index: 100; display: flex; align-items: center; justify-content: center;
+            margin: 10px auto 25px auto; width: 100%; min-height: 44px; box-sizing: border-box;
         }
 
         .btn-back-icon { 
-            position: absolute; 
-            left: 0; 
-            top: 50%; 
-            transform: translateY(-50%); 
-            background: rgba(18, 18, 18, 0.25); 
-            backdrop-filter: blur(25px) saturate(200%); 
-            -webkit-backdrop-filter: blur(25px) saturate(200%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px; 
-            padding: 8px 18px; 
-            color: var(--text); 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            transition: opacity 0.3s, transform 0.2s, background 0.3s; 
-            z-index: 110; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: absolute; left: 0; top: 50%; transform: translateY(-50%); 
+            background: rgba(18, 18, 18, 0.25); backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 8px 18px; color: var(--text); cursor: pointer; 
+            display: flex; align-items: center; justify-content: center; transition: opacity 0.3s, transform 0.2s, background 0.3s; z-index: 110; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-        body.light-mode .btn-back-icon {
-            background: rgba(255, 255, 255, 0.35); 
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
+        body.light-mode .btn-back-icon { background: rgba(255, 255, 255, 0.35); border: 1px solid rgba(0, 0, 0, 0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .btn-back-icon:active { opacity: 0.5; transform: translateY(-50%) scale(0.9); }
         .btn-back-icon svg { width: 22px; height: 22px; }
         
+        /* --- UKURAN BUNGKUSAN OVAL DIBERIKAN JARAK --- */
         .form-title { 
-            margin: 0 auto; 
-            font-size: 16px; 
-            color: var(--accent); 
-            font-weight: bold; 
-            text-align: center; 
-            
-            /* Pembungkus Oval Transparan */
-            background: rgba(18, 18, 18, 0.25); 
-            backdrop-filter: blur(25px) saturate(200%); 
-            -webkit-backdrop-filter: blur(25px) saturate(200%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
-            
-            /* Menyesuaikan Tinggi Konstan & Lebar Dinamis */
-            height: 40px; 
-            width: fit-content; 
-            padding: 0 24px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            letter-spacing: -0.3px;
-            max-width: 65%; /* Mencegah tabrakan dengan tombol back */
+            margin: 0 auto; font-size: 16px; color: var(--accent); font-weight: bold; text-align: center; 
+            background: rgba(18, 18, 18, 0.25); backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px;
+            height: 40px; width: fit-content; padding: 0 25px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.3px; max-width: 65%; 
         }
-        body.light-mode .form-title {
-            background: rgba(255, 255, 255, 0.35); 
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
+        body.light-mode .form-title { background: rgba(255, 255, 255, 0.35); border: 1px solid rgba(0, 0, 0, 0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
 
         .page { display: none; width: 100%; flex: 1; position: relative; } 
         .active { display: flex; flex-direction: column; }
@@ -138,20 +110,34 @@
         .slide-right { animation: slideInRight 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .slide-left { animation: slideInLeft 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
 
-        .center-form-wrapper { display: flex; flex-direction: column; justify-content: center; flex: 1; padding-bottom: 40px; }
+        /* --- KELAS UNTUK MENTRIGGER ANIMASI MENU --- */
+        .animate-items .menu-item, 
+        .animate-items hr, 
+        .animate-items .ios-card,
+        .animate-items .btn-primary, 
+        .animate-items .btn-kirim { opacity: 0; animation: itemPopUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
 
+        .animate-items .menu-item:nth-of-type(1) { animation-delay: 0.05s; }
+        .animate-items .menu-item:nth-of-type(2) { animation-delay: 0.10s; }
+        .animate-items hr, .animate-items .menu-item:nth-of-type(3) { animation-delay: 0.15s; }
+        .animate-items .menu-item:nth-of-type(4) { animation-delay: 0.20s; }
+        .animate-items .menu-item:nth-of-type(5) { animation-delay: 0.25s; }
+        .animate-items .menu-item:nth-of-type(6) { animation-delay: 0.30s; }
+        .animate-items .menu-item:nth-of-type(7) { animation-delay: 0.35s; }
+        .animate-items .menu-item:nth-of-type(8) { animation-delay: 0.40s; }
+        
+        .animate-items .ios-card:nth-of-type(1) { animation-delay: 0.10s; }
+        .animate-items .ios-card:nth-of-type(2) { animation-delay: 0.20s; }
+        .animate-items .btn-primary, .animate-items .btn-kirim { animation-delay: 0.25s; }
+
+        .center-form-wrapper { display: flex; flex-direction: column; justify-content: center; flex: 1; padding-bottom: 40px; }
         .ios-card { background: var(--card-bg); backdrop-filter: blur(20px); border-radius: 24px; padding: 24px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; transition: background 0.3s, border 0.3s; margin-bottom: 15px; }
         
         h1 { font-size: 42px; font-weight: 800; color: var(--accent); margin: 0 0 5px 0; }
         .subtitle { font-size: 15px; margin-top: -5px; margin-bottom: 25px; opacity: 0.7; font-weight: 600; letter-spacing: -0.5px; }
         label { font-size: 12px; opacity: 0.7; display: block; margin-top: 5px; text-align: left; font-weight: 500;}
         
-        select, input[type="text"], input[type="number"], input[type="date"], input[type="time"] { 
-            background: var(--input-bg); color: var(--input-text); border: 1px solid var(--border); 
-            padding: 0 15px; width: 100%; height: 50px; border-radius: 16px; font-size: 15px; 
-            box-sizing: border-box; text-align: left; cursor: pointer; display: flex; align-items: center; 
-            transition: background 0.3s, color 0.3s, transform 0.2s; font-family: inherit; -webkit-appearance: none; appearance: none;
-        }
+        select, input[type="text"], input[type="number"], input[type="date"], input[type="time"] { background: var(--input-bg); color: var(--input-text); border: 1px solid var(--border); padding: 0 15px; width: 100%; height: 50px; border-radius: 16px; font-size: 15px; box-sizing: border-box; text-align: left; cursor: pointer; display: flex; align-items: center; transition: background 0.3s, color 0.3s, transform 0.2s; font-family: inherit; -webkit-appearance: none; appearance: none; }
         select:focus, input:focus { transform: scale(1.01); outline: none; border-color: var(--accent); }
         select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FF9500' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 16px; }
         input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -159,15 +145,15 @@
         textarea { background: var(--input-bg); color: var(--input-text); border: none; padding: 14px; width: 100%; border-radius: 16px; font-size: 15px; box-sizing: border-box; resize: vertical; min-height: 100px; font-family: inherit; margin-top: 5px; transition: background 0.3s, color 0.3s; }
 
         button.btn-primary { background: var(--accent); color: white; border: none; padding: 14px; width: 100%; height: 50px; border-radius: 16px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; display: block; box-sizing: border-box; transition: transform 0.2s; }
-        button.btn-primary:active { transform: scale(0.98); }
+        button.btn-primary:active { transform: scale(0.98) !important; }
         .btn-kirim { background: #30d158; color: white; margin-top: 30px; font-size: 16px; font-weight: bold; border: none; padding: 14px; width: 100%; height: 50px; border-radius: 16px; cursor: pointer; transition: opacity 0.3s, transform 0.2s; box-sizing: border-box; }
-        .btn-kirim:active { transform: scale(0.98); }
+        .btn-kirim:active { transform: scale(0.98) !important; }
         .btn-kirim:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .menu-list { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; width: 100%; }
         .menu-item { background: var(--card-bg); border: 1px solid var(--border); padding: 14px 20px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: transform 0.2s, background 0.3s; color: var(--text); backdrop-filter: blur(20px); box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .menu-item:hover { transform: translateY(-2px); background: rgba(255,255,255,0.05); }
-        .menu-item:active { transform: scale(0.96); }
+        .menu-item:active { transform: scale(0.96) !important; }
         .menu-item-left { display: flex; align-items: center; gap: 16px; }
         .menu-icon { font-size: 20px; background: var(--input-bg); width: 42px; height: 42px; border-radius: 14px; display: flex; align-items: center; justify-content: center; transition: background 0.3s; }
         .menu-text { font-size: 16px; font-weight: 600; letter-spacing: -0.3px; font-family: inherit; }
@@ -186,9 +172,9 @@
         .btn-hapus svg { width: 22px; height: 22px; stroke: white; }
 
         #video { width: 100%; border-radius: 24px; transform: scaleX(-1); background: #000; margin-top: 10px; }
-        #flash-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; transition: opacity 0.1s; border-radius: 24px; z-index: 10; }
+        
         .btn-snap { background: var(--accent); margin-top: 15px; width: 100%; color: white; border: none; padding: 14px; height: 50px; border-radius: 16px; font-size: 15px; font-weight: 600; cursor: pointer; box-sizing: border-box; transition: transform 0.2s; }
-        .btn-snap:active { transform: scale(0.98); }
+        .btn-snap:active { transform: scale(0.98) !important; }
         .foto-item { margin-top: 20px; position: relative; width: 100%; animation: fadeIn 0.3s ease; }
         .foto-item img { width: 100%; border-radius: 16px; box-sizing: border-box; border: 1px solid var(--border); }
 
@@ -208,65 +194,22 @@
 
         /* --- BAR NAVIGASI DIPERKEcil 70% --- */
         .ig-floating-nav {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 70%; 
-            max-width: 280px; 
-            background: rgba(18, 18, 18, 0.25);
-            backdrop-filter: blur(25px) saturate(200%);
-            -webkit-backdrop-filter: blur(25px) saturate(200%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 40px;
-            display: flex;
-            justify-content: space-between; 
-            align-items: center;
-            padding: 6px 10px; 
-            z-index: 9999;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
-            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 70%; max-width: 280px; 
+            background: rgba(18, 18, 18, 0.25); backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 40px; display: flex; justify-content: space-between; align-items: center;
+            padding: 6px 10px; z-index: 9999; box-shadow: 0 12px 35px rgba(0,0,0,0.4); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        body.light-mode .ig-floating-nav {
-            background: rgba(255, 255, 255, 0.35);
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            box-shadow: 0 12px 35px rgba(0,0,0,0.05);
-        }
+        body.light-mode .ig-floating-nav { background: rgba(255, 255, 255, 0.35); border: 1px solid rgba(0, 0, 0, 0.08); box-shadow: 0 12px 35px rgba(0,0,0,0.05); }
 
-        .ig-floating-nav.shrunk {
-            max-width: 200px;
-            padding: 4px 6px;
-            bottom: 12px;
-        }
+        .ig-floating-nav.shrunk { max-width: 200px; padding: 4px 6px; bottom: 12px; }
         .ig-floating-nav.shrunk .ig-nav-item { width: 38px; height: 32px; }
         .ig-floating-nav.shrunk .ig-nav-item svg { width: 18px; height: 18px; }
         .ig-floating-nav.shrunk .nav-indicator { height: 32px; top: 4px; }
 
-        .nav-indicator {
-            position: absolute;
-            height: 38px;
-            background: rgba(255, 255, 255, 0.25); 
-            border-radius: 20px;
-            left: 0;
-            top: 6px; 
-            z-index: -1;
-            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), width 0.35s, height 0.4s, top 0.4s;
-            pointer-events: none;
-        }
+        .nav-indicator { position: absolute; height: 38px; background: rgba(255, 255, 255, 0.25); border-radius: 20px; left: 0; top: 6px; z-index: -1; transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), width 0.35s, height 0.4s, top 0.4s; pointer-events: none; }
         body.light-mode .nav-indicator { background: rgba(0, 0, 0, 0.08); }
 
-        .ig-nav-item {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 50px;
-            height: 38px;
-            color: var(--text);
-            cursor: pointer;
-            border-radius: 20px;
-            transition: color 0.3s, opacity 0.3s, width 0.4s, height 0.4s;
-            opacity: 0.5;
-        }
+        .ig-nav-item { display: flex; align-items: center; justify-content: center; width: 50px; height: 38px; color: var(--text); cursor: pointer; border-radius: 20px; transition: color 0.3s, opacity 0.3s, width 0.4s, height 0.4s; opacity: 0.5; }
         .ig-nav-item svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; transition: width 0.4s, height 0.4s;}
         .ig-nav-item.active { opacity: 1; }
         .ig-nav-item.active svg { stroke-width: 2.3; }
@@ -274,7 +217,7 @@
 </head>
 <body>
 
-    <div id="full-screen-flash"></div>
+    <div id="bg-illuminator"></div>
 
     <div id="loading-overlay">
         <div class="spinner"></div>
@@ -291,7 +234,7 @@
     <div class="container">
         
         <div id="page-dashboard" class="page active">
-            <div class="main-header">
+            <div class="main-header splash-mode" id="main-header-dashboard">
                 <div class="theme-switch-wrapper">
                     <label class="theme-switch" for="checkbox">
                         <input type="checkbox" id="checkbox" />
@@ -305,35 +248,36 @@
                 <p class="subtitle">PLTU Muara Jawa 2 x 27,5 MW</p>
             </div>
             
-            <div class="menu-list" style="margin-top: 10px;">
-                <!-- Opsi ini langsung membuka Log Sheet Selfie -->
-                <div class="menu-item" onclick="changePage('page-login', 'right')">
-                    <div class="menu-item-left">
-                        <div class="menu-icon">📸</div>
-                        <div class="menu-text">Log Sheet Selfie</div>
+            <div id="dashboard-menu">
+                <div class="menu-list" style="margin-top: 10px;">
+                    <div class="menu-item" onclick="changePage('page-login', 'right')">
+                        <div class="menu-item-left">
+                            <div class="menu-icon">📸</div>
+                            <div class="menu-text">Log Sheet Selfie</div>
+                        </div>
+                        <div class="menu-arrow">❯</div>
                     </div>
-                    <div class="menu-arrow">❯</div>
-                </div>
-                
-                <div class="menu-item" onclick="changePage('page-flm', 'right')">
-                    <div class="menu-item-left">
-                        <div class="menu-icon">🔧</div>
-                        <div class="menu-text">Laporan FLM dan 5S</div>
+                    
+                    <div class="menu-item" onclick="changePage('page-flm', 'right')">
+                        <div class="menu-item-left">
+                            <div class="menu-icon">🔧</div>
+                            <div class="menu-text">Laporan FLM dan 5S</div>
+                        </div>
+                        <div class="menu-arrow">❯</div>
                     </div>
-                    <div class="menu-arrow">❯</div>
-                </div>
 
-                <hr style="margin: 10px 0; border: 0; border-top: 1px solid var(--border);">
+                    <hr style="margin: 10px 0; border: 0; border-top: 1px solid var(--border);">
 
-                <div class="menu-item danger" onclick="changePage('page-temuan', 'right')">
-                    <div class="menu-item-left">
-                        <div class="menu-icon">⚠️</div>
-                        <div class="menu-text">Laporkan Temuan</div>
+                    <div class="menu-item danger" onclick="changePage('page-temuan', 'right')">
+                        <div class="menu-item-left">
+                            <div class="menu-icon">⚠️</div>
+                            <div class="menu-text">Laporkan Temuan</div>
+                        </div>
+                        <div class="menu-arrow">❯</div>
                     </div>
-                    <div class="menu-arrow">❯</div>
                 </div>
             </div>
-            <p style="font-size: 11px; margin-top: 30px; opacity: 0.4; font-weight: 500;">v3.9 (Logsheet Submenu Update)</p>
+            <p class="version-text">v4.2 (Live Camera + Screen Flash)</p>
         </div>
 
         <div id="page-pilih-logsheet" class="page">
@@ -345,8 +289,7 @@
             </div>
             
             <div class="menu-list">
-                
-                <!-- MENU LOGSHEET (Pintu masuk kumpulan semua logsheet) -->
+                <!-- MENU LOGSHEET -->
                 <div class="menu-item" onclick="changePage('page-menu-logsheet', 'right')">
                     <div class="menu-item-left">
                         <div class="menu-icon">📑</div>
@@ -357,6 +300,7 @@
 
                 <hr style="margin: 5px 0; border: 0; border-top: 1px solid var(--border);">
 
+                <!-- MENU LOGBOOK -->
                 <div class="menu-item" onclick="changePage('page-pilih-logbook', 'right')">
                     <div class="menu-item-left">
                         <div class="menu-icon">📓</div>
@@ -382,7 +326,6 @@
             </div>
         </div>
 
-        <!-- HALAMAN BARU UNTUK KUMPULAN MENU LOGSHEET -->
         <div id="page-menu-logsheet" class="page">
             <div class="header-bar">
                 <button class="btn-back-icon" onclick="changePage('page-pilih-logsheet', 'left')">
@@ -430,7 +373,6 @@
             </div>
         </div>
 
-        <!-- HALAMAN UNTUK PILIH LOGBOOK -->
         <div id="page-pilih-logbook" class="page">
             <div class="header-bar">
                 <button class="btn-back-icon" onclick="changePage('page-pilih-logsheet', 'left')">
@@ -618,9 +560,9 @@
                     <label class="switch"><input type="checkbox" id="flash-toggle" checked><span class="slider-modern"></span></label>
                 </div>
                 <select id="lokasi-select"></select>
+                <!-- STREAM KAMERA LANGSUNG TANPA OVERLAY -->
                 <div style="position: relative;">
                     <video id="video" autoplay playsinline></video>
-                    <div id="flash-overlay"></div>
                 </div>
                 <button class="btn-snap" id="snap">Ambil Foto</button>
             </div>
@@ -630,7 +572,7 @@
 
         <div id="page-flm" class="page">
             <div class="header-bar">
-                <h2 class="form-title" style="padding:0;">Laporan FLM & 5S</h2>
+                <h2 class="form-title">Laporan FLM & 5S</h2>
             </div>
             
             <div class="ios-card" style="margin-bottom: 15px;">
@@ -648,7 +590,7 @@
 
         <div id="page-temuan" class="page">
             <div class="header-bar">
-                <h2 class="form-title" style="padding:0;">Laporan Temuan</h2>
+                <h2 class="form-title">Laporan Temuan</h2>
             </div>
             
             <div class="ios-card">
@@ -694,13 +636,20 @@
 
     <script>
         const GAS_URL = "https://script.google.com/macros/s/AKfycbxlGGifwVgGluN9d2zYq1aoXcn4SM0eMu1q8zO47h9DPYDphrsyxXHV8VCOzD1J98QQwg/exec";
-        const flashToggle = document.getElementById('flash-toggle');
         let base64TemuanFinal = ""; 
 
-        // --- VARIABEL UNTUK ALUR TIPE CCR / LOKAL ---
+        // Toggling Screen Flash background
+        const flashToggle = document.getElementById('flash-toggle');
+        flashToggle.addEventListener('change', function() {
+            if(this.checked) {
+                document.getElementById('bg-illuminator').classList.add('on');
+            } else {
+                document.getElementById('bg-illuminator').classList.remove('on');
+            }
+        });
+
         let selectedArea = "";
         
-        // ===== TEMPELKAN LINK LOGSHEET KAMU DI SINI =====
         const linkLogsheet = {
             "Turbin": {
                 "CCR": "https://docs.google.com/spreadsheets/d/1HwkOkaYepyTGd0qgtSzrJYEwWOY-R2Y2acPw7XdGsYA/edit?gid=1332735050#gid=1332735050",
@@ -716,28 +665,21 @@
             }
         };
 
-        // ===== LINK UNTUK OPSI FORM BARU & LOGBOOK =====
         const linkFormLainnya = {
-            // -- Ekstra Logsheet
             "Logsheet CABOP": "https://drive.google.com/drive/folders/1nnQNipCfU130LkX8zqlsxDothy98DrKG",
             "Log Sheet Soot Blower": "https://docs.google.com/spreadsheets/d/1WZGqbaAM8s98rXujA3lIEIXXmUIMfhqgiK_f_e3UiuE/edit?gid=1495526235#gid=1495526235",
-            "Log Sheet Biomass": "", // Kosong, nanti bisa diisi
-            
-            // -- Logbook Operator
+            "Log Sheet Biomass": "", 
             "Log Book Shift Meeting CCR": "https://docs.google.com/spreadsheets/d/1cTMHLJElicoRxM-_hsNEPAqI8CfIpUKptEH-Fl1ymkg/edit?gid=679046181#gid=679046181",
             "Log Book CCR Turbin": "https://docs.google.com/spreadsheets/d/11YOHxcQjUqR3QFAEjfhDz1Q3mlfzAPrI3haBfMs8Jh0/edit?gid=1500957351#gid=1500957351",
-            "Log Book CCR Boiler": "https://docs.google.com/spreadsheets/d/11YOHxcQjUqR3QFAEjfhDz1Q3mlfzAPrI3haBfMs8Jh0/edit?gid=1500957351#gid=1500957351", // (Link sama dengan turbin dari prompt)
+            "Log Book CCR Boiler": "https://docs.google.com/spreadsheets/d/11YOHxcQjUqR3QFAEjfhDz1Q3mlfzAPrI3haBfMs8Jh0/edit?gid=1500957351#gid=1500957351", 
             "Log Book CCR Common": "https://docs.google.com/spreadsheets/d/1_xDA45z8WBj_k0h--1N4ssdqaiYPJdMJQmkRopTl1K0/edit?gid=572140905#gid=572140905",
             "Log Book Lokal Turbin": "https://docs.google.com/spreadsheets/d/1AugTsQ3JGj5f6aSqIPlIxyUB8-dqwDjhIpGgFhs0hgQ/edit?gid=262366497#gid=262366497",
             "Log Book Lokal Boiler": "https://docs.google.com/spreadsheets/d/16vZHtB64U9SC6IUbaxODkjkJXecEyR95MKL9mCB25CU/edit?gid=1634980342#gid=1634980342",
             "Log Book Lokal Common": "https://docs.google.com/spreadsheets/d/1cIr_cQ-Ya09HXSRWsvsYRCZBPrBjZMpHwgUwb8wKDTs/edit?gid=266576510#gid=266576510",
-            "Log Book ALBES": "", // Kosong, nanti bisa diisi
-
-            // -- Ekstra Form
+            "Log Book ALBES": "", 
             "Form Pengujian BSDG": "https://link-pengujian-bsdg-disini.com",
             "Form Run Test Peralatan": "https://link-run-test-peralatan-disini.com"
         };
-        // ================================================
 
         const trashSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
 
@@ -759,11 +701,24 @@
         function tutupAlert() { document.getElementById('custom-alert').classList.remove('show'); }
 
         let currentNavIndex = 0;
+        const video = document.getElementById('video');
 
         document.addEventListener("DOMContentLoaded", function() {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active', 'slide-right', 'slide-left'));
-            document.getElementById('page-dashboard').classList.add('active');
+            // Setup Splash Screen Effect
+            const headerDash = document.getElementById('main-header-dashboard');
+            const dashMenu = document.getElementById('dashboard-menu');
+            const verText = document.querySelector('.version-text');
             
+            setTimeout(() => {
+                headerDash.classList.remove('splash-mode');
+                setTimeout(() => {
+                    dashMenu.classList.add('show-menu');
+                    verText.classList.add('show-menu');
+                    document.getElementById('page-dashboard').classList.add('animate-items');
+                }, 400); 
+            }, 1500);
+
+            // Dark mode setup
             const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
             const currentTheme = localStorage.getItem('theme');
             if (currentTheme === 'light') { document.body.classList.add('light-mode'); toggleSwitch.checked = true; }
@@ -774,7 +729,6 @@
             });
             setTimeout(() => { updateBottomNav('page-dashboard'); }, 100); 
 
-            /* Logika Scroll Shrink Navigasi */
             let lastScrollY = window.scrollY;
             let isNavShrunk = false;
             window.addEventListener('scroll', () => {
@@ -789,7 +743,6 @@
                 lastScrollY = currentScrollY;
             });
 
-            /* Menjaga presisi indikator setiap kali nav bar berganti dimensi */
             const navObserver = new ResizeObserver(() => {
                 const activePage = document.querySelector('.page.active');
                 if(activePage) updateBottomNav(activePage.id);
@@ -819,7 +772,6 @@
             }
         }
 
-        /* Fungsi Untuk Handle Klik Navigasi Bawah */
         function handleNavClick(pageId, targetIndex) {
             let direction = 'right';
             if (targetIndex < currentNavIndex) direction = 'left';
@@ -831,43 +783,44 @@
 
         function changePage(pageId, direction = 'right') {
             document.querySelectorAll('.page').forEach(p => {
-                p.classList.remove('active', 'slide-right', 'slide-left');
+                p.classList.remove('active', 'slide-right', 'slide-left', 'animate-items');
             });
+            
             const target = document.getElementById(pageId);
-            target.classList.add('active');
+            void target.offsetWidth; 
+            target.classList.add('active', 'animate-items');
             
             if (direction === 'right') target.classList.add('slide-right');
             else if (direction === 'left') target.classList.add('slide-left');
             
+            // Logic khusus matikan/nyalakan flash & Stream kamera jika berpindah halaman
+            if (pageId !== 'page-kamera') {
+                document.getElementById('bg-illuminator').classList.remove('on');
+                // Matikan kamera untuk menghemat daya
+                const stream = video.srcObject;
+                if (stream) { stream.getTracks().forEach(track => track.stop()); video.srcObject = null; }
+            } else {
+                if (document.getElementById('flash-toggle').checked) {
+                    document.getElementById('bg-illuminator').classList.add('on');
+                }
+            }
+
             window.scrollTo(0, 0); 
             updateBottomNav(pageId);
         }
 
-        /* --- LOGIKA BARU UNTUK PILIH AREA DAN BUKA LINK --- */
-        function pilihArea(area) {
-            selectedArea = area;
-            changePage('page-pilih-tipe', 'right');
-        }
+        function pilihArea(area) { selectedArea = area; changePage('page-pilih-tipe', 'right'); }
 
         function bukaLinkLogsheet(tipe) {
             const urlTarget = linkLogsheet[selectedArea][tipe];
-            
-            if(urlTarget && !urlTarget.includes("kamu-disini")) {
-                window.open(urlTarget, '_blank');
-            } else {
-                tampilkanAlert(`Link logsheet untuk ${selectedArea} (${tipe}) belum diatur di dalam kode.`);
-            }
+            if(urlTarget && !urlTarget.includes("kamu-disini")) window.open(urlTarget, '_blank');
+            else tampilkanAlert(`Link logsheet untuk ${selectedArea} (${tipe}) belum diatur di dalam kode.`);
         }
 
-        /* --- FUNGSI BARU UNTUK BUKA LINK FORM / LOGBOOK LAINNYA --- */
         function bukaLinkForm(namaForm) {
             const urlTarget = linkFormLainnya[namaForm];
-            
-            if (urlTarget && urlTarget.trim() !== "" && !urlTarget.includes("disini.com")) {
-                window.open(urlTarget, '_blank');
-            } else {
-                tampilkanAlert(`Link untuk ${namaForm} belum diatur atau masih kosong.`);
-            }
+            if (urlTarget && urlTarget.trim() !== "" && !urlTarget.includes("disini.com")) window.open(urlTarget, '_blank');
+            else tampilkanAlert(`Link untuk ${namaForm} belum diatur atau masih kosong.`);
         }
 
         function mulaiFormSelfie() {
@@ -887,27 +840,65 @@
             tugasLokasi[pos].forEach(loc => {
                 let opt = document.createElement('option'); opt.value = loc; opt.innerHTML = loc; selectLokasi.appendChild(opt);
             });
+            
             changePage('page-kamera', 'right');
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } }).then(stream => { document.getElementById('video').srcObject = stream; }).catch(err => tampilkanAlert("Izin akses kamera diperlukan."));
+            
+            // Mulai stream kamera
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+                .then(stream => { 
+                    video.srcObject = stream; 
+                    if(document.getElementById('flash-toggle').checked) {
+                        document.getElementById('bg-illuminator').classList.add('on');
+                    }
+                })
+                .catch(err => tampilkanAlert("Izin akses kamera diperlukan."));
         }
 
-        const video = document.getElementById('video'), gallery = document.getElementById('gallery'), snap = document.getElementById('snap'), flash = document.getElementById('flash-overlay');
+        const gallery = document.getElementById('gallery');
+        const snap = document.getElementById('snap');
+        
         snap.addEventListener('click', async () => {
-            await new Promise(r => setTimeout(r, 200));
-            if (flashToggle.checked) flash.style.opacity = '1';
-            setTimeout(() => {
-                const lokasi = document.getElementById('lokasi-select').value;
-                const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.scale(-1, 1); ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-                ctx.setTransform(1, 0, 0, 1, 0, 0); 
-                const now = new Date(); const tgl = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); const hari = now.toLocaleDateString('id-ID', { weekday: 'long' }); const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
-                ctx.fillStyle = "white"; ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 5; ctx.font = "bold 40px -apple-system"; ctx.fillText(lokasi.toUpperCase(), 40, canvas.height - 110); ctx.font = "30px -apple-system"; ctx.fillText(`${hari}, ${tgl} | ${jam}`, 40, canvas.height - 60);
-                const div = document.createElement('div'); div.className = 'foto-item'; div.dataset.lokasi = lokasi;
-                div.innerHTML = `<p style="color:#FF9500; font-weight:bold; text-align:left; padding-left:10px; margin-bottom:10px; margin-top:0;">${lokasi}</p><img src="${canvas.toDataURL('image/png')}">`;
-                const btnHapus = document.createElement('button'); btnHapus.className = 'btn-hapus'; btnHapus.innerHTML = trashSVG; btnHapus.onclick = () => div.remove();
-                div.appendChild(btnHapus); gallery.appendChild(div); flash.style.opacity = '0';
-            }, 100);
+            // Jeda kecil agar efek tombol tertekan (CSS :active) sempat terlihat
+            await new Promise(r => setTimeout(r, 100));
+            
+            const lokasi = document.getElementById('lokasi-select').value;
+            const canvas = document.createElement('canvas'); 
+            canvas.width = video.videoWidth; 
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            
+            // Flip gambar karena kamera depan (mirror)
+            ctx.scale(-1, 1); 
+            ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+            ctx.setTransform(1, 0, 0, 1, 0, 0); 
+            
+            // Tambahkan text watermark
+            const now = new Date(); 
+            const tgl = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); 
+            const hari = now.toLocaleDateString('id-ID', { weekday: 'long' }); 
+            const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+            
+            ctx.fillStyle = "white"; 
+            ctx.shadowColor = "rgba(0,0,0,0.8)"; 
+            ctx.shadowBlur = 5; 
+            ctx.font = "bold 40px -apple-system"; 
+            ctx.fillText(lokasi.toUpperCase(), 40, canvas.height - 110); 
+            ctx.font = "30px -apple-system"; 
+            ctx.fillText(`${hari}, ${tgl} | ${jam}`, 40, canvas.height - 60);
+            
+            // Buat elemen foto ke dalam galeri
+            const div = document.createElement('div'); 
+            div.className = 'foto-item'; 
+            div.dataset.lokasi = lokasi;
+            div.innerHTML = `<p style="color:#FF9500; font-weight:bold; text-align:left; padding-left:10px; margin-bottom:10px; margin-top:0;">${lokasi}</p><img src="${canvas.toDataURL('image/png')}">`;
+            
+            const btnHapus = document.createElement('button'); 
+            btnHapus.className = 'btn-hapus'; 
+            btnHapus.innerHTML = trashSVG; 
+            btnHapus.onclick = () => div.remove();
+            div.appendChild(btnHapus); 
+            
+            gallery.appendChild(div); 
         });
 
         async function kirimLogsheetSelfie() {
